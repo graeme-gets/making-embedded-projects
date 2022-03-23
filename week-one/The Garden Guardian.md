@@ -21,3 +21,5 @@ The user can control the device from a device or web browser to either manually 
 -	Laser for ‘sharper’ deterrent and weed killer
 -	Wi-Fi for remote control, logging and image capture
 -	Loud Speaker
+
+![Alt text](/assets/Guardian Sketch.png)
