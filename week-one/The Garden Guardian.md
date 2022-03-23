@@ -22,4 +22,4 @@ The user can control the device from a device or web browser to either manually 
 -	Wi-Fi for remote control, logging and image capture
 -	Loud Speaker
 
-![Alt text](/assets/Guardian Sketch.png)
+![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/assets/Guardian-Sketch.png)
