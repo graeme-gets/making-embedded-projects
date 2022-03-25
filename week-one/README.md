@@ -44,7 +44,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
 
-<img src="hierarchy-of-control.png">
+<img src="Hierarchy-of-control.png">
 
 </p>
 
@@ -54,7 +54,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
 
-<img src="software-layer-diagram.png">
+<img src="Software-layer-diagram.png">
 
 </p>
 
