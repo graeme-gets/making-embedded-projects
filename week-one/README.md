@@ -25,8 +25,12 @@ The user can control the device from a device or web browser to either manually 
 
 ![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hardware-block-diagram.png)
 
+
 ![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-block-diagram.png)
+
 
 ![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hierarchy-of-control.png)
 
+
 ![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-Layer-Diagram.png)
+
