@@ -24,7 +24,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center" >
 <kbd>
-<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hardware-block-diagram.png">
+<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/hardware-block-diagram.png">
 </kbd>
 </p>
 
@@ -34,7 +34,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
   <kbd>
-<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-block-diagram.png">
+<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/software-block-diagram.png">
     </kbd>
 </p>
 
@@ -44,7 +44,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
   <kbd>
-<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hierarchy-of-control.png">
+<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/hierarchy-of-control.png">
     </kbd>
 </p>
 
@@ -54,7 +54,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
   <kbd>
-<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-Layer-Diagram.png">
+<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/software-layer-diagram.png">
     </kbd>
 </p>
 
