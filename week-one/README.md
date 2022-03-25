@@ -34,7 +34,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
 
-<img  src="software-block-diagram.png">
+<img  src="Software-block-diagram.png">
 
 </p>
 
