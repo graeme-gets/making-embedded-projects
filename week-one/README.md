@@ -54,7 +54,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center">
 
-<img src="Software-layer-diagram.png">
+<img src="Software-Layer-Diagram.png">
 
 </p>
 
