@@ -22,15 +22,33 @@ The user can control the device from a device or web browser to either manually 
 -	Wi-Fi for remote control, logging and image capture
 -	Loud Speaker
 
+<kbd>
+<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hardware-block-diagram.png">
+</kbd>
 
-![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hardware-block-diagram.png)
+<br>
+<br>
+<br>
+
+<kbd>
+<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-block-diagram.png">
+</kbd>
+
+<br>
+<br>
+<br>
+
+<kbd>
+<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hierarchy-of-control.png">
+</kbd>
+
+<br>
+<br>
+<br>
+
+<kbd>
+<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-Layer-Diagram.png">
+</kbd>
 
 
-![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-block-diagram.png)
-
-
-![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Hierarchy-of-control.png)
-
-
-![Alt text](https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/Software-Layer-Diagram.png)
 
