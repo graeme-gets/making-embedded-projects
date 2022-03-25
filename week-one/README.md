@@ -23,9 +23,9 @@ The user can control the device from a device or web browser to either manually 
 -	Loud Speaker
 
 <p align="center" >
-<kbd>
+
 <img  src="hardware-blockd-diagram.png">
-</kbd>
+
 </p>
 
 <br>
@@ -33,9 +33,9 @@ The user can control the device from a device or web browser to either manually 
 <br>
 
 <p align="center">
-  <kbd>
-<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/software-block-diagram.png">
-    </kbd>
+
+<img  src="software-block-diagram.png">
+
 </p>
 
 <br>
@@ -43,9 +43,9 @@ The user can control the device from a device or web browser to either manually 
 <br>
 
 <p align="center">
-  <kbd>
-<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/hierarchy-of-control.png">
-    </kbd>
+
+<img src="hierarchy-of-control.png">
+
 </p>
 
 <br>
@@ -53,9 +53,9 @@ The user can control the device from a device or web browser to either manually 
 <br>
 
 <p align="center">
-  <kbd>
-<img src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/software-layer-diagram.png">
-    </kbd>
+
+<img src="software-layer-diagram.png">
+
 </p>
 
 
