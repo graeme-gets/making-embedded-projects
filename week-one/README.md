@@ -24,7 +24,7 @@ The user can control the device from a device or web browser to either manually 
 
 <p align="center" >
 <kbd>
-<img  src="https://github.com/graeme-gets/making-embedded-projects/blob/main/week-one/hardware-block-diagram.png">
+<img  src="hardware-blockd-diagram.png">
 </kbd>
 </p>
 
