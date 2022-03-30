@@ -42,7 +42,7 @@ Feature|Notes
 | CAN | Control Area network
 | Position decoder| This is a Quadrature or Hall decoder osed for Hall sensors or digital rotary encoders.
 | Frequency Meter| Frequency Counter at 24 bit accuracy. 
-| Configurable Custom logic|
+| Configurable Custom logic| This is unusual. Its much like a very simple FPGA or GAL that allows 'glue' logic to be configured. This allows for hardware logic to exist between pheriperals, event system and pins.
 | Parallel Capture Controller| Used to interface with an external system like a camera , ADC or DSP. It can clock up to 14 parallel bits 
 | Pherpheral Touch Controller| Capacitive touch detection
 | Advanced Encryption System| AES encryption module with 256bit key upto 2Mb/s rate! 
@@ -52,3 +52,28 @@ Feature|Notes
 ## Analog to Digital Converter (ADC)
 
 The ATSAME54P20A has two ADC converters which can be configured as 8, 10 or 12 bit resolutions and up to 1M samples per sec.
+It can use either internal or external reference and allows dor DMA trasfer. 
+It can use up to 23 analog inputs per ADC - 16 of which can be external.
+
+## Board and processor costs?
+
+####SAM E54 Xplained Pro kit
+Note : I only checked UK based sites for this excersise. I also only costed for ingle quantity
+
+Vendor|Dev kit Cost|Availabilty| Processor Cost | Processor Availability
+-|-|-|-|-
+DigiKey| £75 | 195 | £7.19 | 0 - Lead time 52 Weeks
+Mouser | £81.76 | 358|£7.99 | 0 - lead time 52 weeks
+Farnell | £84.17 | 0- Lead time 106 days! |£10.06 | 0 - 52 weeks lead time
+RS Online | £76.46| 45 |£8.49 | 0 - no indication of lead time
+
+## Application Note
+
+The Ket itsself does not have application notes, but the processor does. 
+
+Only one application note seems to exist.
+
+####Sleepwalking with the Event System AN3342
+This application note deal with the reducion of power consumption. Sleepwalking is an advanced mode allowing periperals to be woken up without waking the CPU. This allows functions to take place that do not require the CPU such as Momery operations and data collection.
+
+
