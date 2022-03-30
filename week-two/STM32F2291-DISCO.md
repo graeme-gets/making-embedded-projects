@@ -53,7 +53,7 @@ The chip has a number of peripherals that are not usually found  on microprocess
 The chip is cleary designed for LCD grphic optimisation. 
 
 Feature|Notes
--|-|-
+-|-|
 | LCD parallel interface | 8080/6800 modes
 | LCD-TFT controller| fully programmable resolution
 | Chrom-ART Accelerator | enhanced graphic content creation

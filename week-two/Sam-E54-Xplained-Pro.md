@@ -36,7 +36,7 @@ This chip has a number of periperals that are not usually found  on microprocess
 
 
 Feature|Notes
--|-|-
+-|-|
 | Wake up pins with tamper and debonce filter| Debouce if offten dealt with in softwere (or external hardware) so interesting to see it implemented on the chip
 | Ethernet| Implements 10/100 Mbps and is IEEE 802.3 compatible
 | CAN | Control Area network
