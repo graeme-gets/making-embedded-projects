@@ -50,7 +50,7 @@ The chip also has an external memory controller which can use up to 32 bits of a
 
 
 The chip has a number of peripherals that are not usually found  on microprocessors. 
-The chip is cleary designed for LCD grphic optimisation. 
+The chip is clearly designed for LCD graphic and sound. 
 
 Feature|Notes
 -|-|
