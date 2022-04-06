@@ -18,16 +18,18 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
+#include "usb_otg.h"
 #include "gpio.h"
+#include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "stdio.h"
-#include "ledController.h"
-#include "debounceController.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+static uint32_t debounceValue = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,6 +60,54 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void ToggleRedLed()
+{
+	HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+}
+void ToggleGreenLed()
+{
+	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	ToggleGreenLed();
+	HAL_TIM_Base_Start_IT(&htim6);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	// Disable the Button Interrupt
+	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+	// Check that there is a value on the stack
+	if (debounceValue==0)
+		debounceValue =1;
+
+	// read the Button Value
+	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 1)
+	{
+		debounceValue  = debounceValue << 1;
+	}
+	else
+	{
+		debounceValue++;
+	}
+
+	// If debouce value overflows then reset and start again (stop timer and enabel IRQ)
+
+	if (debounceValue == (1<<10))
+	{
+		// Stop the timer
+		HAL_TIM_Base_Stop(&htim6);
+		// reset the debounce value
+		debounceValue = 1;
+		HAL_UART_Transmit(&huart5, (uint8_t*)"B\n", 2, 50);
+		// Enable the Interrupt again
+		HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	}
+
+
+}
 
 /* USER CODE END 0 */
 
@@ -89,31 +139,39 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
-  MX_TIM3_Init();
-  MX_USART1_UART_Init();
+  MX_FMC_Init();
+  MX_I2C3_Init();
+  MX_SPI5_Init();
+  MX_TIM1_Init();
+  MX_USB_OTG_HS_HCD_Init();
+  MX_UART5_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  GreenLedStateToggle(1);
-  const char* WelcomeMessage_1 = (char*)"Week 3 Assignment\n";
-  const char* WelcomeMessage_2 = (char*)"-----------------\n\n";
 
-   HAL_UART_Transmit(&huart1,(uint8_t*) WelcomeMessage_1, strlen(WelcomeMessage_1), 100);
-   HAL_UART_Transmit(&huart1,(uint8_t*) WelcomeMessage_2, strlen(WelcomeMessage_2), 100);
+
+
+
+
+   const char* WelcomeMessage_1 = (char*)"Week 3 Assignment\n";
+   const char* WelcomeMessage_2 = (char*)"-----------------\n\n";
+
+  HAL_UART_Transmit(&huart5,(uint8_t*) WelcomeMessage_1, strlen(WelcomeMessage_1), 100);
+  HAL_UART_Transmit(&huart5,(uint8_t*) WelcomeMessage_2, strlen(WelcomeMessage_2), 100);
+
+
+
+  ToggleRedLed();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	//  ToggleRedLed();
+	//  HAL_Delay(500);
     /* USER CODE END WHILE */
-	  	if (buttonPressed())
-	  	{
-	  		GreenLedStateToggle();
-	  		GreenLedOff();
-	  		buttonReset();
-	  	}
-	  	GreenLedToggle();
-	  	 HAL_Delay(500);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -131,20 +189,19 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 72;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 3;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
