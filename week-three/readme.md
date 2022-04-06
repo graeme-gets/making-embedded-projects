@@ -77,7 +77,9 @@ $$ 1/200 = 0.005$$
 First step was to devide the Timer clock (prescaller) to 84 in order to reduce the clock to 1Mhz
 Second step was to device the clock again using the ARR (autamatic reload register) to 5000
 
-$$ 1000000/5000 = 200 $$
+ > *1000000/5000 = 200*
+
+
 
 As the registed are 0 index based the following parameters were used
 
