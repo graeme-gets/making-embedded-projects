@@ -85,7 +85,7 @@ $$ frequency = 84Mhz/ (83+1) * (4999+1) $$
 to give an exact frequency of 200hz.
 
 ```mermaid
-graph LR
+graph 
 
     A[Button Pressed] -->|trigger interrupt| B[Disable Button Interrupt]
     --> C[start Timer 3]
