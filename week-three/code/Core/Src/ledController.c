@@ -7,39 +7,40 @@
 
 #include "main.h"
 
-static uint8_t GreenLedEnabled;
+static uint8_t ledControlEnabled;
 
 
 // ****************************************************************//
 // Sets the state of the LED. If 0 then LED is not enabled, if 1
 // then LED is enabled and can be switched of or toggled
 // ****************************************************************//
-void SetGreenLedState(uint8_t state)
+void setLedControlState(uint8_t state)
 {
-	GreenLedEnabled = state;
+	ledControlEnabled = state;
 }
 
-void GreenLedStateToggle()
+void ledControlStateToggle()
 {
-	if (GreenLedEnabled)
-		GreenLedEnabled = 0;
+	if (ledControlEnabled)
+		ledControlEnabled = 0;
 	else
-		GreenLedEnabled = 1;
+		ledControlEnabled = 1;
 }
 
-void GreenLedToggle()
+void ledToggle()
 {
-	if (GreenLedEnabled)
+	if (ledControlEnabled)
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
-void GreenLedOff()
+void ledOff()
 {
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
+	if (ledControlEnabled)
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
 }
 
-void GreenLedOn()
+void ledOn()
 {
-	if (GreenLedEnabled)
+	if (ledControlEnabled)
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_SET);
 }

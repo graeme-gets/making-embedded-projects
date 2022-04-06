@@ -93,7 +93,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  GreenLedStateToggle(1);
+  ledControlStateToggle(1);
   const char* WelcomeMessage_1 = (char*)"Week 3 Assignment\n";
   const char* WelcomeMessage_2 = (char*)"-----------------\n\n";
 
@@ -108,11 +108,11 @@ int main(void)
 
 	  if (buttonPressed())
 	  	  	{
-	  	  		GreenLedStateToggle();
-	  	  		GreenLedOff();
+	  	  		ledControlStateToggle();
+	  	  		ledOff();
 	  	  		buttonReset();
 	  	  	}
-	  	  	GreenLedToggle();
+	  	  	ledToggle();
 	  	  	 HAL_Delay(500);
 
     /* USER CODE END WHILE */

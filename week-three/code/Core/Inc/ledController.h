@@ -9,9 +9,9 @@
 #define INC_LEDCONTROLLER_H_
 
 
-void GreenLedToggle();
-void GreenLedOff();
-void GreenLedOn();
-void GreenLedStateToggle();
-void SetGreenLedState(uint8_t state);
+void ledToggle();
+void ledOff();
+void ledOn();
+void ledControlStateToggle();
+void setLedControlState(uint8_t state);
 #endif /* INC_LEDCONTROLLER_H_ */
