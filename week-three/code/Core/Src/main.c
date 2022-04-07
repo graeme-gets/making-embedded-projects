@@ -108,8 +108,10 @@ int main(void)
 
 	  if (buttonPressed())
 	  	  	{
-	  	  		ledControlStateToggle();
-	  	  		ledOff();
+	  	  		if (!ledControlStateToggle())
+	  	  		{
+	  	  			ledOff(1);
+	  	  		}
 	  	  		buttonReset();
 	  	  	}
 	  	  	ledToggle();

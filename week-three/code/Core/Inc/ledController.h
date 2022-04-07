@@ -10,8 +10,9 @@
 
 
 void ledToggle();
-void ledOff();
+void ledOff(uint8_t force);
 void ledOn();
-void ledControlStateToggle();
+uint8_t ledControlStateToggle();
 void setLedControlState(uint8_t state);
+
 #endif /* INC_LEDCONTROLLER_H_ */

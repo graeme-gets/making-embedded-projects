@@ -15,7 +15,8 @@ static volatile uint32_t debounceValue = 1;
 static volatile uint32_t pressed = 0;
 
 // ****************************************************************//
-// Returns the State of the button press.
+// Returns the State of the button press. This needs to be called when
+// the button state has been dealt with
 // ****************************************************************//
 uint8_t buttonPressed()
 {

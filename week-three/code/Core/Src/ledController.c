@@ -19,13 +19,22 @@ void setLedControlState(uint8_t state)
 	ledControlEnabled = state;
 }
 
-void ledControlStateToggle()
+
+// ****************************************************************//
+// Toggles the control state between Enabled and Disabled
+// Returns the new state
+// ****************************************************************//
+uint8_t ledControlStateToggle()
 {
 	if (ledControlEnabled)
 		ledControlEnabled = 0;
 	else
 		ledControlEnabled = 1;
+
+	return ledControlEnabled;
 }
+
+
 
 void ledToggle()
 {
@@ -33,9 +42,9 @@ void ledToggle()
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
-void ledOff()
+void ledOff(uint8_t force)
 {
-	if (ledControlEnabled)
+	if (ledControlEnabled || force)
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
 }
 
