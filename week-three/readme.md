@@ -43,7 +43,7 @@ The push button controls weather or not the state of the LED can be changed.
 The loop then calls the 'ledToggle' function. This function will either toggle or not depending on the LED control state value. 
 
 ### LED Controller
-ledController.c
+ledController.c  
 ledController.h
 
 The Led Controller is a simple module that controls the state of the LED (either on or off) and whether the state can be changed or not. 
@@ -51,7 +51,7 @@ The Led Controller is a simple module that controls the state of the LED (either
 The module uses the HAL_GPIO driver (Initiated in GPIO_Init function)  and references the #defines of LD2 as specified in the main.h file.
 
 ### Debounce Controller
-debounceController.c
+debounceController.c  
 debounceController.h
 
 This controller manages the debounce of the push button switch. This is a simpler version of the debounce process, only allowing for a single button state of 'pressed' or 'not pressed'.
