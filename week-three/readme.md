@@ -7,10 +7,8 @@ The push button needed to be debounced with the option of using interrupts.
 
 ## Build Environment
 
-IDE : SMT32CubeIDE 
-
-Repository : Git
-
+IDE : SMT32CubeIDE  
+Repository : Git  
 Repository manager : Fork (I prefer this to the IDE's built in tools for git)
 
 ## Board used
