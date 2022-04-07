@@ -1,15 +1,17 @@
 # Week 3 Assignment - Blinky
 
 ## Overview
-This weeks assignment was to create a blinky app with a button to turn of the blinking LED or turn it on. 
+This weeks assignment was to create a blinky app with a button to allow the LED to blink or not.
 
 The push button needed to be debounced with the option of using interrupts. 
 
-### Build Environment
-IDE : SMT32CubeIDE
-Repository : Git
-Repository manager : Fork (I prefer this to the IDE's built in tools for git)
+## Build Environment
 
+IDE : SMT32CubeIDE 
+
+Repository : Git
+
+Repository manager : Fork (I prefer this to the IDE's built in tools for git)
 
 ## Board used
 For this assignment I used the STM32F401RE whic may well be used for my final project.
