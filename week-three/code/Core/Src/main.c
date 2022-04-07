@@ -105,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  // Check if there has been a stable button press. If so, toggle the LED control state
 	  if (buttonPressed())
 	  	  	{
 	  	  		if (!ledControlStateToggle())
@@ -115,7 +115,7 @@ int main(void)
 	  	  		buttonReset();
 	  	  	}
 	  	  	ledToggle();
-	  	  	 HAL_Delay(500);
+	  	  	HAL_Delay(500);
 
     /* USER CODE END WHILE */
 

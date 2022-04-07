@@ -68,7 +68,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 0)
 	{
 		debounceValue  = debounceValue << 1;
-		HAL_GPIO_TogglePin(testTimer_GPIO_Port, testTimer_Pin);
+		// Toggle a pin to measure clock on Saleae
+		// HAL_GPIO_TogglePin(testTimer_GPIO_Port, testTimer_Pin);
 	}
 	else
 	{

@@ -35,19 +35,28 @@ uint8_t ledControlStateToggle()
 }
 
 
-
+// ****************************************************************//
+// Toggle the state of the LED
+// ****************************************************************//
 void ledToggle()
 {
 	if (ledControlEnabled)
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
+
+// ****************************************************************//
+// turn the LED off = force it if the ledControlEnabled is false
+// ****************************************************************//
 void ledOff(uint8_t force)
 {
 	if (ledControlEnabled || force)
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
 }
 
+// ****************************************************************//
+// Tuen the LED on
+// ****************************************************************//
 void ledOn()
 {
 	if (ledControlEnabled)
