@@ -7,7 +7,7 @@ The push button needed to be debounced with the option of using interrupts.
 
 ## Video
 Quick video to show it working
-<a href="assets/Week-three-blinky.m4v" title="Blinky Video">Blinky Video</a>
+<a href="assets/Week-three-blinky.m4v" target="_blank" title="Blinky Video">Blinky Video</a>
 ## Build Environment
 
 IDE : SMT32CubeIDE  
