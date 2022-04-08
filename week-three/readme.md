@@ -5,6 +5,9 @@ This weeks assignment was to create a blinky app with a button to allow the LED 
 
 The push button needed to be debounced with the option of using interrupts. 
 
+## Video
+Quick video to show it working
+<a href src="assets/Week-three-blinky.m4v" title="Blinky Video">Blinky Video</a>
 ## Build Environment
 
 IDE : SMT32CubeIDE  
