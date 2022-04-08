@@ -7,7 +7,7 @@ The push button needed to be debounced with the option of using interrupts.
 
 ## Video
 Quick video to show it working
-(https://youtube.com/shorts/fgLJDu6YvQs)
+(https://www.youtube.com/watch?v=fgLJDu6YvQs)
 
 
 ## Build Environment
