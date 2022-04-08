@@ -7,10 +7,7 @@ The push button needed to be debounced with the option of using interrupts.
 
 ## Video
 Quick video to show it working
-<a href="assets/Week-three-blinky.m4v" target="_blank" title="Blinky Video">Blinky Video</a>
-(click "view raw" and it will download the video or look in the Assets folder and download)
-
-[Blinky Video](https://github.com/graeme-gets/making-embedded-projects/tree/main/week-three/assets/Week-three-blinky.m4v)
+(https://youtube.com/shorts/fgLJDu6YvQs)
 
 
 ## Build Environment
