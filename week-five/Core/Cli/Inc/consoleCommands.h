@@ -12,7 +12,7 @@
 #include "console.h"
 
 #define CONSOLE_COMMAND_MAX_COMMAND_LENGTH 10		// command only
-#define CONSOLE_COMMAND_MAX_LENGTH 256				// whole command with argument
+#define CONSOLE_COMMAND_MAX_LENGTH 100				// whole command with argument
 #define CONSOLE_COMMAND_MAX_HELP_LENGTH 64			// if this is zero, there will be no  help (XXXOPT: RAM reduction)
 
 #if CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
@@ -36,5 +36,6 @@ typedef struct sConsoleCommandStruct
 
 #define CONSOLE_COMMAND_TABLE_END {NULL, NULL, HELP("")}
 
+const sConsoleCommandTable_T* ConsoleCommandsGetTable(void);
 
 #endif /* CLI_SRC_CONSOLECOMMANDS_H_ */

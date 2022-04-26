@@ -22,6 +22,7 @@ static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleInt16(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[]);
 
+
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
     {";", &ConsoleCommandComment, HELP("Comment! You do need a space after the semicolon. ")},
@@ -29,6 +30,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
     {"int", &ConsoleCommandParamExampleInt16, HELP("How to get a signed int16 from params list: int -321")},
     {"u16h", &ConsoleCommandParamExampleHexUint16, HELP("How to get a hex u16 from the params list: u16h aB12")},
+	{"led", &ConsoleCommandLedToggle, HELP("Toggle the Blue LED")},
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
@@ -38,6 +40,11 @@ static eCommandResult_T ConsoleCommandComment(const char buffer[])
 	// do nothing
 	IGNORE_UNUSED_VARIABLE(buffer);
 	return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
+{
+	HAL_GPIO_TogglePin(, GPIO_Pin)
 }
 
 static eCommandResult_T ConsoleCommandHelp(const char buffer[])

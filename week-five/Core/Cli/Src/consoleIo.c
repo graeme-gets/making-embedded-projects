@@ -3,37 +3,54 @@
 
 #include "consoleIo.h"
 #include <stdio.h>
+#include "cBuffer.h"
+#include "string.h"
+uint8_t cliBuffer[CLI_BUFFER_LENGTH];
+cBuffer_t cliCB ; // Circular Buffer for the CLI
+uint8_t cliRX;
+extern UART_HandleTypeDef huart1;
+
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UART_Transmit(&huart1, &cliRX, 1, 100);
+    HAL_UART_Receive_IT(&huart1, &cliRX, 1);
+
+    if (cBuffer_Write(&cliCB, cliRX) == CBUFFER_FULL)
+    {
+    	HAL_UART_Transmit(&huart1, (uint8_t*)"*", 1, 100);
+    }
+
+}
 
 eConsoleError ConsoleIoInit(void)
 {
+	cBuffer_init(&cliCB,cliBuffer, CLI_BUFFER_LENGTH);
+	HAL_UART_Receive_IT(&huart1, &cliRX, 1);
 	return CONSOLE_SUCCESS;
 }
 
-// This is modified for the Wokwi RPi Pico simulator. It works fine
-// but that's partially because the serial terminal sends all of the
-// characters at a time without losing any of them. What if this function
-// wasn't called fast enough?
-eConsoleError ConsoleIoReceive(uint8_t *buffer, const uint32_t bufferLength, uint32_t *readLength)
-{
-	//uint32_t i = 0;
-	//char ch;
 
-/*	while (uart_is_readable(uart0))
+
+eConsoleError ConsoleIoReceive(uint8_t *buffer)
+{
+
+
+	if (cBuffer_GetString(&cliCB, buffer, '\r') == CBUFFER_OK)
+		return CONSOLE_SUCCESS;
+	else if (cBuffer_isFull(&cliCB) == CBUFFER_FULL)
 	{
-  	ch = uart_getc(uart0);
-  	uart_putc(uart0, ch); // echo
-		buffer[i] = (uint8_t) ch;
-		i++;
+		// KILL The Buffer
+		cBuffer_Kill(&cliCB);
+		return CONSOLE_ERROR;
 	}
 
-	*readLength = i;
-	*readLength */
-	return CONSOLE_SUCCESS;
 }
 
 eConsoleError ConsoleIoSendString(const char *buffer)
 {
-	printf("%s", buffer);
+	HAL_UART_Transmit(&huart1, (const uint8_t*)buffer, strlen(buffer), 100);
 	return CONSOLE_SUCCESS;
 }
 

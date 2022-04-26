@@ -17,6 +17,7 @@
 #include "console.h"
 #include "consoleIo.h"
 #include "consoleCommands.h"
+#include "cBuffer.h"
 
 #ifndef MIN
   #define MIN(X, Y)		(((X) < (Y)) ? (X) : (Y))
@@ -30,16 +31,15 @@
 #define LF_CHAR              '\n'
 
 // global variables
-char mReceiveBuffer[CONSOLE_COMMAND_MAX_LENGTH];
-uint32_t mReceivedSoFar;
-bool mReceiveBufferNeedsChecking = false;
+uint8_t mReceiveBuffer[CONSOLE_COMMAND_MAX_LENGTH];
+
 
 // local functions
-static int32_t ConsoleCommandEndline(const char receiveBuffer[], const  uint32_t filledLength);
+
 
 static uint32_t ConsoleCommandMatch(const char* name, const char *buffer);
 static eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation);
-static uint32_t ConsoleResetBuffer(char receiveBuffer[], const  uint32_t filledLength, uint32_t usedSoFar);
+
 
 static eCommandResult_T ConsoleUtilHexCharToInt(char charVal, uint8_t* pInt); // this might be replaceable with *pInt = atoi(str)
 static eCommandResult_T ConsoleUtilsIntToHexChar(uint8_t intVal, char* pChar); // this could be replaced with itoa (intVal, str, 16);
@@ -75,47 +75,8 @@ static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 	return result;
 }
 
-// ConsoleResetBuffer
-// In an ideal world, this would just zero out the buffer. However, thre are times when the
-// buffer may have data beyond what was used in the last command.
-// We don't want to lose that data so we move it to the start of the command buffer and then zero
-// the rest.
-static uint32_t ConsoleResetBuffer(char receiveBuffer[], const uint32_t filledLength, uint32_t usedSoFar)
-{
-	uint32_t remaining = (filledLength - usedSoFar);
-	uint32_t i = 0;
 
-	while (usedSoFar < filledLength)
-	{
-		receiveBuffer[i] = receiveBuffer[usedSoFar]; // move the end to the start
-		i++;
-		usedSoFar++;
-	}
-	for ( /* nothing */ ; i < CONSOLE_COMMAND_MAX_LENGTH ; i++)
-	{
-		receiveBuffer[i] =  NULL_CHAR;
-	}
-	return remaining;
-}
 
-// ConsoleCommandEndline
-// Check to see where in the buffer stream the endline is; that is the end of the command and parameters
-static int32_t ConsoleCommandEndline(const char receiveBuffer[], const  uint32_t filledLength)
-{
-	uint32_t i = 0;
-	int32_t result = NOT_FOUND; // if no endline is found, then return -1 (NOT_FOUND)
-
-	while ( ( CR_CHAR != receiveBuffer[i])  && (LF_CHAR != receiveBuffer[i])
-			&& ( i < filledLength ) )
-	{
-		i++;
-	}
-	if ( i < filledLength )
-	{
-		result = i;
-	}
-	return result;
-}
 
 // ConsoleInit
 // Initialize the console interface and all it depends on
@@ -123,11 +84,13 @@ void ConsoleInit(void)
 {
 	uint32_t i;
 
+
+
 	ConsoleIoInit();
-	ConsoleIoSendString("Welcome to the Consolinator, your gateway to testing code and hardware.");
+	ConsoleIoSendString("Week-Five Project Console ported (mostly) from Elecia's code");
 	ConsoleIoSendString(STR_ENDLINE);
 	ConsoleIoSendString(CONSOLE_PROMPT);
-	mReceivedSoFar = 0u;
+
 
 	for ( i = 0u ; i < CONSOLE_COMMAND_MAX_LENGTH ; i++)
 	{
@@ -142,60 +105,50 @@ void ConsoleInit(void)
 void ConsoleProcess(void)
 {
 	const sConsoleCommandTable_T* commandTable;
-	uint32_t received;
+
 	uint32_t cmdIndex;
-	int32_t  cmdEndline;
 	int32_t  found;
 	eCommandResult_T result;
 
-	ConsoleIoReceive((uint8_t*)&(mReceiveBuffer[mReceivedSoFar]), ( CONSOLE_COMMAND_MAX_LENGTH - mReceivedSoFar ), &received);
-	if ( received > 0u || mReceiveBufferNeedsChecking)
+
+	if (ConsoleIoReceive(mReceiveBuffer) == CONSOLE_SUCCESS )  // have complete string, find command
 	{
-		mReceiveBufferNeedsChecking = false;
-		mReceivedSoFar += received;
-		cmdEndline = ConsoleCommandEndline(mReceiveBuffer, mReceivedSoFar);
-		if ( cmdEndline >= 0 )  // have complete string, find command
+		commandTable = ConsoleCommandsGetTable();
+		cmdIndex = 0u;
+		found = NOT_FOUND;
+		while ( ( NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
 		{
-			commandTable = ConsoleCommandsGetTable();
-			cmdIndex = 0u;
-			found = NOT_FOUND;
-			while ( ( NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
+			if ( ConsoleCommandMatch(commandTable[cmdIndex].name, (char*)mReceiveBuffer) )
 			{
-				if ( ConsoleCommandMatch(commandTable[cmdIndex].name, mReceiveBuffer) )
+				result = commandTable[cmdIndex].execute((char*)mReceiveBuffer);
+				if ( COMMAND_SUCCESS != result )
 				{
-					result = commandTable[cmdIndex].execute(mReceiveBuffer);
-					if ( COMMAND_SUCCESS != result )
-					{
-						ConsoleIoSendString("Error: ");
-						ConsoleIoSendString(mReceiveBuffer);
+					ConsoleIoSendString("Error: ");
+					ConsoleIoSendString((char*)mReceiveBuffer);
 
-						ConsoleIoSendString("Help: ");
-						ConsoleIoSendString(commandTable[cmdIndex].help);
-						ConsoleIoSendString(STR_ENDLINE);
-
-					}
-					found = cmdIndex;
-				}
-				else
-				{
-					cmdIndex++;
-
-				}
-			}
-			if ( ( cmdEndline != 0 ) && ( NOT_FOUND == found ) )
-			{
-				if (mReceivedSoFar > 2) /// shorter than that, it is probably nothing
-				{
-					ConsoleIoSendString("Command not found.");
+					ConsoleIoSendString("Help: ");
+					ConsoleIoSendString(commandTable[cmdIndex].help);
 					ConsoleIoSendString(STR_ENDLINE);
+
 				}
+				found = cmdIndex;
+
 			}
-			//reset the buffer by moving over any leftovers and nulling the rest
-			// clear up to and including the found end line character
-			mReceivedSoFar = ConsoleResetBuffer(mReceiveBuffer, mReceivedSoFar, cmdEndline + 1);
-			mReceiveBufferNeedsChecking = mReceivedSoFar > 0 ? true : false;
-			ConsoleIoSendString(CONSOLE_PROMPT);
+			else
+			{
+				cmdIndex++;
+
+			}
+
 		}
+		if (found == NOT_FOUND)
+		{
+			ConsoleIoSendString("Command not found: ");
+			ConsoleIoSendString((char*)mReceiveBuffer);
+			ConsoleIoSendString(STR_ENDLINE);
+		}
+
+		ConsoleIoSendString(CONSOLE_PROMPT);
 	}
 }
 

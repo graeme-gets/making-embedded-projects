@@ -26,6 +26,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "cBuffer.h"
+#include "console.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,7 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CLI_BUFFER_LENGTH 64
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,9 +48,9 @@
 
 /* USER CODE BEGIN PV */
 
-uint8_t cliBuffer[CLI_BUFFER_LENGTH];
-cBuffer_t cliCB ; // Circular Buffer for the CLI
-uint8_t cliRX;
+//extern cBuffer_t cliCB ;
+//extern uint8_t cliRX;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,16 +61,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    HAL_UART_Transmit(&huart1, &cliRX, 1, 100);
-    HAL_UART_Receive_IT(&huart1, &cliRX, 1);
-    if (cBuffer_Write(&cliCB, cliRX) == CBUFFER_FULL)
-    {
-    	HAL_UART_Transmit(&huart1, (uint8_t*)"*", 1, 100);
-    }
 
-}
 /* USER CODE END 0 */
 
 /**
@@ -104,11 +96,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Init the CLI circular Buffer
-  cBuffer_init(&cliCB,cliBuffer, CLI_BUFFER_LENGTH);
+
 
 
   // Init the CLI UART for Interupt
-  HAL_UART_Receive_IT(&huart1, &cliRX, 1);
+
+
+  ConsoleInit();
+
 
   /* USER CODE END 2 */
 
@@ -116,6 +111,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  ConsoleProcess();
+	  HAL_Delay(10);
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
