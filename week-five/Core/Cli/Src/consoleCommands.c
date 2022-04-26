@@ -21,6 +21,7 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[]);
 static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleInt16(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[]);
+static eCommandResult_T ConsoleCommandLedToggle(const char buffer[]);
 
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
@@ -44,7 +45,8 @@ static eCommandResult_T ConsoleCommandComment(const char buffer[])
 
 static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
 {
-	HAL_GPIO_TogglePin(, GPIO_Pin)
+	HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+	return COMMAND_SUCCESS;
 }
 
 static eCommandResult_T ConsoleCommandHelp(const char buffer[])

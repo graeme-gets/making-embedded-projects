@@ -145,9 +145,9 @@ void ConsoleProcess(void)
 		{
 			ConsoleIoSendString("Command not found: ");
 			ConsoleIoSendString((char*)mReceiveBuffer);
-			ConsoleIoSendString(STR_ENDLINE);
-		}
 
+		}
+		ConsoleIoSendString(STR_ENDLINE);
 		ConsoleIoSendString(CONSOLE_PROMPT);
 	}
 }
