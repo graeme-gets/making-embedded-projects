@@ -50,8 +50,18 @@ static eCommandResult_T ConsoleUtilsIntToHexChar(uint8_t intVal, char* pChar); /
 static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 {
 	char *cmdEnd =strchr(buffer, ' '); // look for first space
+	if (cmdEnd == 0x0)
+	{
+			return strcmp(name,buffer) == 0;
+	}
+	else
 
-	return strncmp(name,buffer,cmdEnd - buffer) == 0;
+	{
+		return strncmp(name,buffer,cmdEnd - buffer) == 0;
+	}
+
+
+
 /*	uint32_t i = 0u;
 	uint32_t result = 0u; // match
 

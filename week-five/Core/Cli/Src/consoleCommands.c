@@ -13,6 +13,7 @@
 #include "console.h"
 #include "consoleIo.h"
 #include "version.h"
+#include "gy521.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -21,7 +22,7 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[]);
 static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandLedToggle(const char buffer[]);
 static eCommandResult_T ConsoleCommandLedQuery(const char buffer[]);
-
+static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[]);
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
@@ -30,7 +31,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
 	{"led", &ConsoleCommandLedToggle, HELP("Turns the Blue LED on or off (1==ON; 0=OFF")},
 	{"led?", &ConsoleCommandLedQuery, HELP("Get the state of the LED")},
-
+	{"gyro?", &ConsoleCommandGyroQuery, HELP("Get the state of the GYRO")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -51,6 +52,21 @@ static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
 	return COMMAND_SUCCESS;
 
 }
+
+static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[])
+{
+	uint8_t state = gy521_ready();
+	if (state)
+	{
+		ConsoleIoSendString("GYRO is Spinning :-)");
+	}
+	else
+	{
+			ConsoleIoSendString("GYRO is on holiday :-(");
+	}
+	return COMMAND_SUCCESS;
+}
+
 
 static eCommandResult_T ConsoleCommandLedQuery(const char buffer[])
 {

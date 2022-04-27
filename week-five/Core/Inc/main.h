@@ -63,6 +63,10 @@ void Error_Handler(void);
 #define UART_CONSOLE_TX_GPIO_Port GPIOA
 #define UART_CONSOLE_RX_Pin GPIO_PIN_10
 #define UART_CONSOLE_RX_GPIO_Port GPIOA
+#define I2C_SCL_GYRO_Pin GPIO_PIN_6
+#define I2C_SCL_GYRO_GPIO_Port GPIOB
+#define I2C_SDA_GYRO_Pin GPIO_PIN_7
+#define I2C_SDA_GYRO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
