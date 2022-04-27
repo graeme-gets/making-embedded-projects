@@ -11,7 +11,7 @@
 #include <stdint.h>
 #define CLI_BUFFER_LENGTH 64
 
-typedef enum {CONSOLE_SUCCESS = 0u, CONSOLE_ERROR = 1u } eConsoleError;
+typedef enum {CONSOLE_SUCCESS = 0u, CONSOLE_ERROR = 1u, CONSOLE_NO_STRING = 2u } eConsoleError;
 
 eConsoleError ConsoleIoInit(void);
 

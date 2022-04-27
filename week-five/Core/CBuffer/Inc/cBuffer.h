@@ -39,8 +39,11 @@ typedef struct {
 void cBuffer_init(cBuffer_t *cbuffer,uint8_t* buffer,uint8_t size);
 CBUFFER_ERR cBuffer_Write(cBuffer_t * cbuffer, uint8_t data);
 CBUFFER_ERR cBuffer_Read(cBuffer_t* cbuffer,uint8_t* data);
-CBUFFER_ERR cBuffer_Length(cBuffer_t* cbuffer);
-CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTerminator);
+CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTerminator, uint8_t* len);
 CBUFFER_ERR cBuffer_isFull(cBuffer_t* cbuffer);
-CBUFFER_ERR cBuffer_Kill(cBuffer_t* cbuffer);
+
+void  cBuffer_Kill(cBuffer_t* cbuffer);
+
+uint8_t cBuffer_LengthCustom(cBuffer_t* cbuffer,uint8_t start, uint8_t end);
+uint8_t cBuffer_Length(cBuffer_t* cbuffer);
 #endif /* CBUFFER_CBUFFER_H_ */

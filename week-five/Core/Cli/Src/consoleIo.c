@@ -35,16 +35,22 @@ eConsoleError ConsoleIoInit(void)
 
 eConsoleError ConsoleIoReceive(uint8_t *buffer)
 {
+	uint8_t len;
 
-
-	if (cBuffer_GetString(&cliCB, buffer, '\r') == CBUFFER_OK)
+	if (cBuffer_GetString(&cliCB, buffer, '\r',&len) == CBUFFER_OK)
+	{
+		// clean up string
+		buffer[len]  = 0x0; //Terminate String in C Style
+		manageBackSpace(buffer);
 		return CONSOLE_SUCCESS;
+	}
 	else if (cBuffer_isFull(&cliCB) == CBUFFER_FULL)
 	{
 		// KILL The Buffer
 		cBuffer_Kill(&cliCB);
 		return CONSOLE_ERROR;
 	}
+	return CONSOLE_NO_STRING;
 
 }
 

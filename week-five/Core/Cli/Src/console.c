@@ -49,8 +49,14 @@ static eCommandResult_T ConsoleUtilsIntToHexChar(uint8_t intVal, char* pChar); /
 // the strings are different lengths and we have parameter separators
 static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 {
-	uint32_t i = 0u;
+	char *cmdEnd =strchr(buffer, ' '); // look for first space
+
+	return strncmp(name,buffer,cmdEnd - buffer) == 0;
+/*	uint32_t i = 0u;
 	uint32_t result = 0u; // match
+
+
+
 
 	if ( buffer[i] == name [i] )
 	{
@@ -72,7 +78,7 @@ static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 		i++;
 	}
 
-	return result;
+	return result;*/
 }
 
 
@@ -83,8 +89,6 @@ static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 void ConsoleInit(void)
 {
 	uint32_t i;
-
-
 
 	ConsoleIoInit();
 	ConsoleIoSendString("Week-Five Project Console ported (mostly) from Elecia's code");
@@ -113,10 +117,16 @@ void ConsoleProcess(void)
 
 	if (ConsoleIoReceive(mReceiveBuffer) == CONSOLE_SUCCESS )  // have complete string, find command
 	{
+		if ('\0' == mReceiveBuffer[0] )
+		{
+			ConsoleIoSendString(STR_ENDLINE);
+			ConsoleIoSendString(CONSOLE_PROMPT);
+			return;
+		}
 		commandTable = ConsoleCommandsGetTable();
 		cmdIndex = 0u;
 		found = NOT_FOUND;
-		while ( ( NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
+		while ( (   NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
 		{
 			if ( ConsoleCommandMatch(commandTable[cmdIndex].name, (char*)mReceiveBuffer) )
 			{
@@ -129,17 +139,13 @@ void ConsoleProcess(void)
 					ConsoleIoSendString("Help: ");
 					ConsoleIoSendString(commandTable[cmdIndex].help);
 					ConsoleIoSendString(STR_ENDLINE);
-
 				}
 				found = cmdIndex;
-
 			}
 			else
 			{
 				cmdIndex++;
-
 			}
-
 		}
 		if (found == NOT_FOUND)
 		{
@@ -196,7 +202,8 @@ eCommandResult_T ConsoleReceiveParamInt16(const char * buffer, const uint8_t par
 
 	i = 0;
 	charVal = buffer[startIndex + i];
-	while ( ( LF_CHAR != charVal ) && ( CR_CHAR != charVal )
+	//while ( ( LF_CHAR != charVal ) && ( CR_CHAR != charVal )
+	while ( ( '\0' != charVal )
 			&& ( PARAMETER_SEPARATER != charVal )
 		&& ( i < INT16_MAX_STR_LENGTH ) )
 	{

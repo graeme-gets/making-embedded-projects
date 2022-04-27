@@ -31,7 +31,7 @@ CBUFFER_ERR cBuffer_Write(cBuffer_t * cbuffer, uint8_t data)
 	return CBUFFER_OK;
 }
 
-CBUFFER_ERR cBuffer_Kill(cBuffer_t* cbuffer)
+void cBuffer_Kill(cBuffer_t* cbuffer)
 {
 	cbuffer->read = 0;
 	cbuffer->write = 0;
@@ -44,13 +44,15 @@ CBUFFER_ERR cBuffer_isFull(cBuffer_t* cbuffer)
 	{
 			return CBUFFER_FULL;
 	}
+	else
+		return CBUFFER_OK;
 
 }
 
 /* Looks for a string within the buffer and fills the provided buffer with the string
  *
  */
-CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTerminator)
+CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTerminator, uint8_t* len)
 {
 	uint8_t i;
 	uint8_t found = 0;
@@ -58,7 +60,7 @@ CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTermi
 	CBUFFER_ERR err = CBUFFER_OK;
 	for (i=cbuffer->read; i < cbuffer->write;i++)
 	{
-if (cbuffer->buffer[i] == sTerminator) // A string is found - copy it to the outgoing buffer
+		if (cbuffer->buffer[i] == sTerminator) // A string is found - copy it to the outgoing buffer
 		{
 			found = 1;
 			break;
@@ -67,6 +69,7 @@ if (cbuffer->buffer[i] == sTerminator) // A string is found - copy it to the out
 	if (found)
 	{
 		// Get length of string
+		*len = cBuffer_LengthCustom	(cbuffer, cbuffer->read, i);
 		do{
 			err = cBuffer_Read(cbuffer, &chr);
 			*(string++) = chr;
@@ -90,9 +93,15 @@ CBUFFER_ERR cBuffer_Read(cBuffer_t* cbuffer,uint8_t* data)
 	return CBUFFER_OK;
 }
 
-CBUFFER_ERR cBuffer_Length(cBuffer_t* cbuffer)
+uint8_t cBuffer_Length(cBuffer_t* cbuffer)
 {
 	return (cbuffer->write - cbuffer->read) & (cbuffer->size-1);
-	return CBUFFER_OK;
+
 }
+
+uint8_t cBuffer_LengthCustom(cBuffer_t* cbuffer,uint8_t start, uint8_t end)
+{
+	return (end - start) & (cbuffer->size-1);
+}
+
 
