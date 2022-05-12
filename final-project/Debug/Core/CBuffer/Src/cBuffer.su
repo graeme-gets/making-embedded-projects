@@ -1,0 +1,8 @@
+../Core/CBuffer/Src/cBuffer.c:13:6:cBuffer_init	24	static
+../Core/CBuffer/Src/cBuffer.c:23:13:cBuffer_Write	16	static
+../Core/CBuffer/Src/cBuffer.c:34:6:cBuffer_Kill	16	static
+../Core/CBuffer/Src/cBuffer.c:41:13:cBuffer_isFull	16	static
+../Core/CBuffer/Src/cBuffer.c:55:13:cBuffer_GetString	32	static
+../Core/CBuffer/Src/cBuffer.c:86:13:cBuffer_Read	16	static
+../Core/CBuffer/Src/cBuffer.c:97:9:cBuffer_Length	16	static
+../Core/CBuffer/Src/cBuffer.c:103:9:cBuffer_LengthCustom	16	static

@@ -1,0 +1,8 @@
+../Core/Cli/Src/consoleCommands.c:53:25:ConsoleCommandLedToggle	24	static
+../Core/Cli/Src/consoleCommands.c:69:25:ConsoleCommandGyroQuery	24	static
+../Core/Cli/Src/consoleCommands.c:83:25:ConsoleCommandTimeQuery	112	static
+../Core/Cli/Src/consoleCommands.c:97:25:ConsoleCommandDateQuery	64	static
+../Core/Cli/Src/consoleCommands.c:108:25:ConsoleCommandLedQuery	16	static
+../Core/Cli/Src/consoleCommands.c:120:25:ConsoleCommandHelp	32	static
+../Core/Cli/Src/consoleCommands.c:172:25:ConsoleCommandVer	24	static
+../Core/Cli/Src/consoleCommands.c:184:31:ConsoleCommandsGetTable	4	static
