@@ -1,1 +1,2 @@
 ../Core/Helpers/Src/stringHelpers.c:21:6:manageBackSpace	24	static
+../Core/Helpers/Src/stringHelpers.c:47:9:isNumber	16	static

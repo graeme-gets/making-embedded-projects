@@ -31,7 +31,7 @@ Core/GY521/Src/gy521.o: ../Core/GY521/Src/gy521.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/GY521/Inc/gy521.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/GY521/Inc/gy521.h \
  ../Core/Inc/i2c.h ../Core/Inc/main.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -66,6 +66,6 @@ Core/GY521/Src/gy521.o: ../Core/GY521/Src/gy521.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/GY521/Inc/gy521.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/GY521/Inc/gy521.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:

@@ -21,6 +21,8 @@
 //TODO: Make module for RTC control
 extern RTC_HandleTypeDef hrtc;
 
+
+
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
 
@@ -31,6 +33,7 @@ static eCommandResult_T ConsoleCommandLedQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
 
 
 
@@ -44,10 +47,63 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"gyro?", &ConsoleCommandGyroQuery, HELP("Get the state of the GYRO")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
+	{"date", &ConsoleCommandDateSet, HELP("Set the current date")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
+/***********************************************************
+ * Set RTC Date
+ * Paramater format : DD MM YY
+ *
+ ***********************************************************/
+static eCommandResult_T ConsoleCommandDateSet(const char buffer[])
+{
+	eCommandResult_T result;
+	int16_t day;
+	int16_t month;
+	int16_t year;
+	RTC_DateTypeDef sDate;
 
+
+	result = ConsoleReceiveParamInt16(buffer, 1, &day);
+	if (result != COMMAND_SUCCESS || !IS_RTC_DATE(day) )
+	{
+		ConsoleSendLine("** ERROR *** Day value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+
+	result = ConsoleReceiveParamInt16(buffer, 2, &month);
+	if (result != COMMAND_SUCCESS || !IS_RTC_MONTH(month) )
+	{
+		ConsoleSendLine("** ERROR *** Month value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+	result = ConsoleReceiveParamInt16(buffer, 3, &year);
+	if (result != COMMAND_SUCCESS || !IS_RTC_YEAR(year) )
+	{
+		ConsoleSendLine("** ERROR *** Year value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+
+	sDate.Date = day;
+	sDate.Month = month;
+	sDate.Year = year;
+	sDate.WeekDay = 7;
+
+
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) // Must Set using BIN else Year is incorrect!
+	{
+		ConsoleSendLine("** ERROR *** Date format incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+	else
+	{
+		ConsoleSendLine("Date Set");
+		return COMMAND_SUCCESS;
+	}
+}
 
 
 static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
@@ -84,10 +140,9 @@ static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[])
 {
 	char time[30];
 	RTC_TimeTypeDef sTime;
-	char date[30];
 	RTC_DateTypeDef sDate;
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN); // There is a bug in HAL where the time is only returned if the date is also read (even after the fact!)
 	sprintf(time,"Time: %02d.%02d.%02d\r\n",sTime.Hours,sTime.Minutes,sTime.Seconds);
 	ConsoleSendString(time);
 	return COMMAND_SUCCESS;

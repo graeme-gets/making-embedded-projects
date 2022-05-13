@@ -33,9 +33,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/rtc.h \
  ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/CBuffer/Inc/cBuffer.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/WS2812/Inc/ws2812.h
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/CBuffer/Inc/cBuffer.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/WS2812/Inc/ws2812.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -76,6 +76,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/CBuffer/Inc/cBuffer.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/WS2812/Inc/ws2812.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/CBuffer/Inc/cBuffer.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/WS2812/Inc/ws2812.h:

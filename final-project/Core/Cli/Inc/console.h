@@ -45,4 +45,5 @@ eCommandResult_T ConsoleSendString(const char *buffer); // must be null terminat
 eCommandResult_T ConsoleSendLine(const char *buffer); // must be null terminated
 
 
+
 #endif /* CLI_SRC_CONSOLE_H_ */

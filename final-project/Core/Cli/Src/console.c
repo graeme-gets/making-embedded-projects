@@ -18,6 +18,7 @@
 #include "consoleIo.h"
 #include "consoleCommands.h"
 #include "cBuffer.h"
+#include "stringHelpers.h"
 
 #ifndef MIN
   #define MIN(X, Y)		(((X) < (Y)) ? (X) : (Y))
@@ -49,46 +50,19 @@ static eCommandResult_T ConsoleUtilsIntToHexChar(uint8_t intVal, char* pChar); /
 // the strings are different lengths and we have parameter separators
 static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 {
+	int r;
 	char *cmdEnd =strchr(buffer, ' '); // look for first space
 	if (cmdEnd == 0x0)
 	{
-			return strcmp(name,buffer) == 0;
+			r =  strcmp(name,buffer) == 0;
 	}
 	else
-
 	{
-		return strncmp(name,buffer,cmdEnd - buffer) == 0;
+		r =  strncmp(name,buffer,strlen(name)) == 0;
 	}
 
+	return r;
 
-
-/*	uint32_t i = 0u;
-	uint32_t result = 0u; // match
-
-
-
-
-	if ( buffer[i] == name [i] )
-	{
-		result = 1u;
-		i++;
-	}
-
-	while ( ( 1u == result ) &&
-		( i < CONSOLE_COMMAND_MAX_COMMAND_LENGTH )  &&
-		( buffer[i] != PARAMETER_SEPARATER ) &&
-		( buffer[i] != LF_CHAR ) &&( buffer[i] != CR_CHAR ) &&
-		( buffer[i] != (char) NULL_CHAR )
-		)
-	{
-		if ( buffer[i] != name[i] )
-		{
-			result = 0u;
-		}
-		i++;
-	}
-
-	return result;*/
 }
 
 
@@ -211,6 +185,7 @@ eCommandResult_T ConsoleReceiveParamInt16(const char * buffer, const uint8_t par
 	char charVal;
 	char str[INT16_MAX_STR_LENGTH];
 
+
 	result = ConsoleParamFindN(buffer, parameterNumber, &startIndex);
 
 	i = 0;
@@ -231,8 +206,13 @@ eCommandResult_T ConsoleReceiveParamInt16(const char * buffer, const uint8_t par
 	if ( COMMAND_SUCCESS == result )
 	{
 		str[i] = NULL_CHAR;
-		*parameterInt = atoi(str);
+		if (isNumber((char*)str))
+				*parameterInt = atoi(str);
+		else
+			result =  COMMAND_PARAMETER_ERROR;
 	}
+
+
 	return result;
 }
 
@@ -272,6 +252,9 @@ eCommandResult_T ConsoleReceiveParamHexUint16(const char * buffer, const uint8_t
 	}
 	return result;
 }
+
+
+
 
 // ConsoleSendParamHexUint16
 // Send a parameter of type uint16 as hex.
@@ -370,6 +353,8 @@ eCommandResult_T ConsoleSendParamInt16(int16_t parameterInt)
 
 	return COMMAND_SUCCESS;
 }
+
+
 
 // ConsoleSendParamInt32
 // Send a parameter of type int16 using the (unsafe) C library function

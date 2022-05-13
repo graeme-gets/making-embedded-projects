@@ -43,3 +43,14 @@ void manageBackSpace(char* string)
 			sPtr = strchr(string,BKSP);
 		}
 }
+
+uint8_t isNumber(uint8_t *string)
+{
+	while (*string != 0x0)
+	{
+		if ((*string) < '0' || (*string) > '9' )
+			return 0;
+		string++;
+	}
+	return 1;
+}

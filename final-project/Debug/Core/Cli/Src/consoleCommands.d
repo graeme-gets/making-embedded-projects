@@ -1,7 +1,7 @@
 Core/Cli/Src/consoleCommands.o: ../Core/Cli/Src/consoleCommands.c \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/consoleCommands.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/CBuffer/Inc/cBuffer.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleCommands.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/CBuffer/Inc/cBuffer.h \
  ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -34,13 +34,13 @@ Core/Cli/Src/consoleCommands.o: ../Core/Cli/Src/consoleCommands.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/consoleIo.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/version.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/GY521/Inc/gy521.h
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/consoleCommands.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/CBuffer/Inc/cBuffer.h:
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleIo.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/version.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/GY521/Inc/gy521.h
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleCommands.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/CBuffer/Inc/cBuffer.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -74,7 +74,7 @@ C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/CBuffer/Inc/cBuffe
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/console.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/consoleIo.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/Cli/Inc/version.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/GY521/Inc/gy521.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleIo.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/version.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/GY521/Inc/gy521.h:

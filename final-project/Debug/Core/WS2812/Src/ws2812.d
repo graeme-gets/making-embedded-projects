@@ -31,7 +31,7 @@ Core/WS2812/Src/ws2812.o: ../Core/WS2812/Src/ws2812.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/WS2812/Inc/ws2812.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/WS2812/Inc/ws2812.h \
  ../Core/Inc/tim.h ../Core/Inc/main.h
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -65,6 +65,6 @@ Core/WS2812/Src/ws2812.o: ../Core/WS2812/Src/ws2812.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/GraemeGets/STM32CubeIDE/Classpert/final-project/Core/WS2812/Inc/ws2812.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/WS2812/Inc/ws2812.h:
 ../Core/Inc/tim.h:
 ../Core/Inc/main.h:
