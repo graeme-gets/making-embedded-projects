@@ -39,7 +39,7 @@ uint8_t mReceiveBuffer[CONSOLE_COMMAND_MAX_LENGTH];
 
 
 static uint32_t ConsoleCommandMatch(const char* name, const char *buffer);
-static eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation);
+//static eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation);
 
 
 static eCommandResult_T ConsoleUtilHexCharToInt(char charVal, uint8_t* pInt); // this might be replaceable with *pInt = atoi(str)
@@ -147,7 +147,7 @@ void ConsoleProcess(void)
 
 // ConsoleParamFindN
 // Find the start location of the nth parametr in the buffer where the command itself is parameter 0
-static eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation)
+eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation)
 {
 	uint32_t bufferIndex = 0;
 	uint32_t parameterIndex = 0;
@@ -206,7 +206,7 @@ eCommandResult_T ConsoleReceiveParamInt16(const char * buffer, const uint8_t par
 	if ( COMMAND_SUCCESS == result )
 	{
 		str[i] = NULL_CHAR;
-		if (isNumber((char*)str))
+		if (isNumber((uint8_t*)str))
 				*parameterInt = atoi(str);
 		else
 			result =  COMMAND_PARAMETER_ERROR;

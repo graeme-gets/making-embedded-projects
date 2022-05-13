@@ -34,6 +34,7 @@ static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
+static eCommandResult_T ConsoleCommandTimeSet(const char buffer[]);
 
 
 
@@ -46,8 +47,9 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"led?", &ConsoleCommandLedQuery, HELP("Get the state of the LED")},
 	{"gyro?", &ConsoleCommandGyroQuery, HELP("Get the state of the GYRO")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
+	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
-	{"date", &ConsoleCommandDateSet, HELP("Set the current date")},
+	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -59,28 +61,33 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 static eCommandResult_T ConsoleCommandDateSet(const char buffer[])
 {
 	eCommandResult_T result;
-	int16_t day;
-	int16_t month;
-	int16_t year;
+	int day;
+	int month;
+	int year;
+	uint32_t startIndex;
 	RTC_DateTypeDef sDate;
 
+	result = ConsoleParamFindN(buffer,1,&startIndex);
+	if (result != COMMAND_SUCCESS)
+		return COMMAND_PARAMETER_ERROR;
 
-	result = ConsoleReceiveParamInt16(buffer, 1, &day);
-	if (result != COMMAND_SUCCESS || !IS_RTC_DATE(day) )
+	sscanf(&buffer[startIndex],"%d-%d-%d",&day,&month,&year);
+
+	if (!IS_RTC_DATE(day) )
 	{
 		ConsoleSendLine("** ERROR *** Day value incorrect");
 		return COMMAND_PARAMETER_ERROR;
 	}
 
 
-	result = ConsoleReceiveParamInt16(buffer, 2, &month);
-	if (result != COMMAND_SUCCESS || !IS_RTC_MONTH(month) )
+
+	if (!IS_RTC_MONTH(month) )
 	{
 		ConsoleSendLine("** ERROR *** Month value incorrect");
 		return COMMAND_PARAMETER_ERROR;
 	}
-	result = ConsoleReceiveParamInt16(buffer, 3, &year);
-	if (result != COMMAND_SUCCESS || !IS_RTC_YEAR(year) )
+
+	if (!IS_RTC_YEAR(year) )
 	{
 		ConsoleSendLine("** ERROR *** Year value incorrect");
 		return COMMAND_PARAMETER_ERROR;
@@ -101,6 +108,65 @@ static eCommandResult_T ConsoleCommandDateSet(const char buffer[])
 	else
 	{
 		ConsoleSendLine("Date Set");
+		return COMMAND_SUCCESS;
+	}
+}
+
+/***********************************************************
+ * Set RTC Time
+ * Paramater format : HH:MM:SS
+ *
+ ***********************************************************/
+static eCommandResult_T ConsoleCommandTimeSet(const char buffer[])
+{
+	eCommandResult_T result;
+	int min;
+	int hour;
+	int sec;
+	uint32_t startIndex;
+	RTC_TimeTypeDef sTime;
+
+	result = ConsoleParamFindN(buffer,1,&startIndex);
+	if (result != COMMAND_SUCCESS)
+		return COMMAND_PARAMETER_ERROR;
+
+	sscanf(&buffer[startIndex],"%d:%d:%d",&hour,&min,&sec);
+
+	if (!IS_RTC_MINUTES(min) )
+	{
+		ConsoleSendLine("** ERROR *** Minute value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+
+
+	if (!IS_RTC_SECONDS(sec) )
+	{
+		ConsoleSendLine("** ERROR *** Seconds value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+	if (!IS_RTC_HOUR24(hour) )
+	{
+		ConsoleSendLine("** ERROR *** Hour value incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+
+	sTime.Hours = hour;
+	sTime.Minutes = min;
+	sTime.Seconds = sec;
+	//sTime.TimeFormat = RTC_FORMAT_B
+
+
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) // Must Set using BIN else Year is incorrect!
+	{
+		ConsoleSendLine("** ERROR *** Time format incorrect");
+		return COMMAND_PARAMETER_ERROR;
+	}
+	else
+	{
+		ConsoleSendLine("Time Set");
 		return COMMAND_SUCCESS;
 	}
 }
