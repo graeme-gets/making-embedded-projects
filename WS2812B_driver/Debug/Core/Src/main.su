@@ -1,0 +1,5 @@
+../Core/Src/main.c:67:10:wordNibbleSwap	16	static
+../Core/Src/main.c:76:6:reset	8	static
+../Core/Src/main.c:88:5:main	16	static
+../Core/Src/main.c:148:6:SystemClock_Config	88	static
+../Core/Src/main.c:197:6:Error_Handler	4	static,ignoring_inline_asm
