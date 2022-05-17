@@ -44,7 +44,7 @@ eCommandResult_T ConsoleSendParamHexUint8(uint8_t parameterUint8);
 eCommandResult_T ConsoleSendString(const char *buffer); // must be null terminated
 eCommandResult_T ConsoleSendLine(const char *buffer); // must be null terminated
 eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterNumber, uint32_t *startLocation);
-
+void ConsolePrintPrompt();
 
 
 #endif /* CLI_SRC_CONSOLE_H_ */

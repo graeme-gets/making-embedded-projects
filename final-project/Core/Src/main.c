@@ -32,6 +32,7 @@
 #include "cBuffer.h"
 #include "console.h"
 #include "ws2812.h"
+#include "mpu6050.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -103,7 +104,16 @@ int main(void)
   const uint8_t angle_difference = 11;
 
   ConsoleInit();
-
+  ConsoleSendString("Console Initialised\n");
+  if (MPU6050_Init(&hi2c1) == 1)
+  {
+	  ConsoleSendString("** ERROR Initialising MNP6050!\n");
+  }
+  else
+  {
+	  ConsoleSendString("MPU6050 Initialised\n");
+  }
+  ConsolePrintPrompt();
 
 
   /* USER CODE END 2 */
@@ -152,9 +162,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 12;

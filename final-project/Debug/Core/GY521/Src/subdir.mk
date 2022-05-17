@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Core/GY521/Src/gy521.c 
+../Core/GY521/Src/gy521.c \
+../Core/GY521/Src/mpu6050.c 
 
 OBJS += \
-./Core/GY521/Src/gy521.o 
+./Core/GY521/Src/gy521.o \
+./Core/GY521/Src/mpu6050.o 
 
 C_DEPS += \
-./Core/GY521/Src/gy521.d 
+./Core/GY521/Src/gy521.d \
+./Core/GY521/Src/mpu6050.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Core/GY521/Src/%.o Core/GY521/Src/%.su: ../Core/GY521/Src/%.c Core/GY521/Src/sub
 clean: clean-Core-2f-GY521-2f-Src
 
 clean-Core-2f-GY521-2f-Src:
-	-$(RM) ./Core/GY521/Src/gy521.d ./Core/GY521/Src/gy521.o ./Core/GY521/Src/gy521.su
+	-$(RM) ./Core/GY521/Src/gy521.d ./Core/GY521/Src/gy521.o ./Core/GY521/Src/gy521.su ./Core/GY521/Src/mpu6050.d ./Core/GY521/Src/mpu6050.o ./Core/GY521/Src/mpu6050.su
 
 .PHONY: clean-Core-2f-GY521-2f-Src
 

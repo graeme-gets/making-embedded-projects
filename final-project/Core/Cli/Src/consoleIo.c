@@ -9,6 +9,7 @@
 uint8_t cliBuffer[CLI_BUFFER_LENGTH];
 cBuffer_t cliCB ; // Circular Buffer for the CLI
 uint8_t cliRX;
+
 extern UART_HandleTypeDef huart1;
 
 
@@ -19,8 +20,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if (CONSOLE_ECHO == 1)
     {
     	HAL_UART_Transmit(&huart1, &cliRX, 1, 100);
-
     }
+
+
+
     // TODO : This is not a great solution!
     if (cliRX != '\n') // ignore a 'new line'
     {
@@ -33,6 +36,7 @@ eConsoleError ConsoleIoInit(void)
 {
 	cBuffer_init(&cliCB,cliBuffer, CLI_BUFFER_LENGTH);
 	HAL_UART_Receive_IT(&huart1, &cliRX, 1);
+
 	return CONSOLE_SUCCESS;
 }
 
@@ -42,18 +46,15 @@ eConsoleError ConsoleIoReceive(uint8_t *buffer)
 {
 	uint8_t len;
 
+
+
+
 	if (cBuffer_GetString(&cliCB, buffer, '\r',&len) == CBUFFER_OK)
 	{
 		// clean up string
-		buffer[len]  = 0x0; //Terminate String in C Style
+		buffer[len-1]  = 0x0; //Terminate String in C Style
 		manageBackSpace((char*)buffer);
 		return CONSOLE_SUCCESS;
-	}
-	else if (cBuffer_isFull(&cliCB) == CBUFFER_FULL)
-	{
-		// KILL The Buffer
-		cBuffer_Kill(&cliCB);
-		return CONSOLE_ERROR;
 	}
 	return CONSOLE_NO_STRING;
 

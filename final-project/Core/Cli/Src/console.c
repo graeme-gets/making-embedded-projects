@@ -66,10 +66,7 @@ static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 }
 
 
-void ConsolePrintMenu()
-{
 
-}
 
 // ConsoleInit
 // Initialize the console interface and all it depends on
@@ -90,6 +87,12 @@ void ConsoleInit(void)
 
 }
 
+void ConsolePrintPrompt()
+{
+	ConsoleIoSendString(STR_ENDLINE);
+	ConsoleIoSendString(CONSOLE_PROMPT);
+}
+
 // ConsoleProcess
 // Looks for new inputs, checks for endline, then runs the matching command.
 // Call ConsoleProcess from a loop, it will handle commands as they become available
@@ -100,49 +103,61 @@ void ConsoleProcess(void)
 	uint32_t cmdIndex;
 	int32_t  found;
 	eCommandResult_T result;
+	eConsoleError consoleResult;
 
+	consoleResult = ConsoleIoReceive(mReceiveBuffer);
 
-	if (ConsoleIoReceive(mReceiveBuffer) == CONSOLE_SUCCESS )  // have complete string, find command
+	switch (consoleResult)
 	{
-		if ('\0' == mReceiveBuffer[0] )
-		{
+		case CONSOLE_ERROR:
+		case CONSOLE_NO_STRING:
+			break;
+		case CONSOLE_SUCCESS:
+			if ('\0' == mReceiveBuffer[0] )
+			{
+				ConsoleIoSendString(STR_ENDLINE);
+				ConsoleIoSendString(CONSOLE_PROMPT);
+				return;
+			}
+			commandTable = ConsoleCommandsGetTable();
+			cmdIndex = 0u;
+			found = NOT_FOUND;
+			while ( (   NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
+			{
+				if ( ConsoleCommandMatch(commandTable[cmdIndex].name, (char*)mReceiveBuffer) )
+				{
+					result = commandTable[cmdIndex].execute((char*)mReceiveBuffer);
+					if ( COMMAND_SUCCESS != result )
+					{
+						ConsoleIoSendString("Error: ");
+						ConsoleIoSendString((char*)mReceiveBuffer);
+
+						ConsoleIoSendString("Help: ");
+						ConsoleIoSendString(commandTable[cmdIndex].help);
+						ConsoleIoSendString(STR_ENDLINE);
+					}
+					found = cmdIndex;
+				}
+				else
+				{
+					cmdIndex++;
+				}
+			}
+			if (found == NOT_FOUND)
+			{
+				ConsoleIoSendString("Command not found: ");
+				ConsoleIoSendString((char*)mReceiveBuffer);
+
+			}
 			ConsoleIoSendString(STR_ENDLINE);
 			ConsoleIoSendString(CONSOLE_PROMPT);
-			return;
-		}
-		commandTable = ConsoleCommandsGetTable();
-		cmdIndex = 0u;
-		found = NOT_FOUND;
-		while ( (   NULL != commandTable[cmdIndex].name ) && ( NOT_FOUND == found ) )
-		{
-			if ( ConsoleCommandMatch(commandTable[cmdIndex].name, (char*)mReceiveBuffer) )
-			{
-				result = commandTable[cmdIndex].execute((char*)mReceiveBuffer);
-				if ( COMMAND_SUCCESS != result )
-				{
-					ConsoleIoSendString("Error: ");
-					ConsoleIoSendString((char*)mReceiveBuffer);
 
-					ConsoleIoSendString("Help: ");
-					ConsoleIoSendString(commandTable[cmdIndex].help);
-					ConsoleIoSendString(STR_ENDLINE);
-				}
-				found = cmdIndex;
-			}
-			else
-			{
-				cmdIndex++;
-			}
-		}
-		if (found == NOT_FOUND)
-		{
-			ConsoleIoSendString("Command not found: ");
-			ConsoleIoSendString((char*)mReceiveBuffer);
+			break;
+		case CONSOLE_BUFFER_FULL:
 
-		}
-		ConsoleIoSendString(STR_ENDLINE);
-		ConsoleIoSendString(CONSOLE_PROMPT);
+		break;
 	}
+
 }
 
 // ConsoleParamFindN

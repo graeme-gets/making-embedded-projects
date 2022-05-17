@@ -12,7 +12,11 @@
 #define CLI_BUFFER_LENGTH 64
 #define CONSOLE_ECHO	0
 
-typedef enum {CONSOLE_SUCCESS = 0u, CONSOLE_ERROR = 1u, CONSOLE_NO_STRING = 2u } eConsoleError;
+typedef enum {	CONSOLE_SUCCESS = 0u,
+				CONSOLE_ERROR = 1u,
+				CONSOLE_NO_STRING = 2u,
+				CONSOLE_BUFFER_FULL = 3u
+} eConsoleError;
 
 eConsoleError ConsoleIoInit(void);
 

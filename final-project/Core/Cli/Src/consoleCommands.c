@@ -13,9 +13,10 @@
 #include "console.h"
 #include "consoleIo.h"
 #include "version.h"
-#include "gy521.h"
+#include "mpu6050.h"
 #include "main.h"
 #include "stdio.h"
+
 
 //ToDo: Make this configurable
 //TODO: Make module for RTC control
@@ -30,11 +31,11 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[]);
 static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandLedToggle(const char buffer[]);
 static eCommandResult_T ConsoleCommandLedQuery(const char buffer[]);
-static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeSet(const char buffer[]);
+static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[]);
 
 
 
@@ -45,11 +46,11 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
 	{"led", &ConsoleCommandLedToggle, HELP("Turns the Blue LED on or off (1==ON; 0=OFF")},
 	{"led?", &ConsoleCommandLedQuery, HELP("Get the state of the LED")},
-	{"gyro?", &ConsoleCommandGyroQuery, HELP("Get the state of the GYRO")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
+	{"accel?", &ConsoleCommandAccelQuery, HELP("Set the current date (DD-MM-YY)")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -188,19 +189,30 @@ static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
 
 }
 
-static eCommandResult_T ConsoleCommandGyroQuery(const char buffer[])
+
+
+/***********************************************************
+ * ConsoleCommandAccelQuery
+ * Get the current values for the Accelerometer
+ * @param: Buffer
+ * @return: eCommandResult_T
+ *
+ ***********************************************************/
+static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 {
-	uint8_t state = gy521_ready();
-	if (state)
-	{
-		ConsoleIoSendString("GYRO is Spinning :-)");
-	}
-	else
-	{
-			ConsoleIoSendString("GYRO is on holiday :-(");
-	}
+
+	MPU6050_t data;
+	char msg[50];
+	MPU6050_Read_All(&I2C_MPU6050, &data);
+
+	sprintf(msg,"X Angle\t: %f \t\t Y Angle\t: %f\n",data.KalmanAngleX, data.KalmanAngleY);
+	ConsoleSendLine(msg);
+
+
 	return COMMAND_SUCCESS;
+
 }
+
 
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[])
 {

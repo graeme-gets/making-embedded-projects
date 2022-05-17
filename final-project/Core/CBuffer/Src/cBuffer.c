@@ -22,10 +22,6 @@ void cBuffer_init(cBuffer_t *cbuffer,uint8_t* buffer,uint8_t size)
 
 CBUFFER_ERR cBuffer_Write(cBuffer_t * cbuffer, uint8_t data)
 {
-	if (cBuffer_Length(cbuffer) == cbuffer->size-1)
-	{
-		return CBUFFER_FULL;
-	}
 	cbuffer->buffer[cbuffer->write] = data;
 	cbuffer->write = (cbuffer->write+1) & (cbuffer->size-1);
 	return CBUFFER_OK;
@@ -35,7 +31,7 @@ void cBuffer_Kill(cBuffer_t* cbuffer)
 {
 	cbuffer->read = 0;
 	cbuffer->write = 0;
-	memset(cbuffer->buffer,0, cbuffer->size);
+	memset(cbuffer->buffer,0, cbuffer->size-1);
 }
 
 CBUFFER_ERR cBuffer_isFull(cBuffer_t* cbuffer)
@@ -58,10 +54,16 @@ CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTermi
 	uint8_t found = 0;
 	uint8_t chr;
 	CBUFFER_ERR err = CBUFFER_OK;
-	for (i=cbuffer->read; i < cbuffer->write;i++)
+	uint8_t length;
+	uint8_t read = cbuffer->read;
+	uint8_t ch;
+	length = cBuffer_Length(cbuffer);
+
+	for (i=0; i < length;i++)
 	{
-		//if (cbuffer->buffer[i] == sTerminator) // A string is found - copy it to the outgoing buffer
-		if (cbuffer->buffer[i] == '\r') // A string is found - copy it to the outgoing buffer
+		err = cBuffer_Peek(cbuffer, &ch, &read);
+
+		if (ch == '\r') // A string is found - copy it to the outgoing buffer
 		{
 			found = 1;
 			break;
@@ -70,10 +72,11 @@ CBUFFER_ERR cBuffer_GetString(cBuffer_t* cbuffer,uint8_t *string, uint8_t sTermi
 	if (found)
 	{
 		// Get length of string
-		*len = cBuffer_LengthCustom	(cbuffer, cbuffer->read, i);
+		*len = cBuffer_LengthCustom	(cbuffer, cbuffer->read, read);
 		do{
 			err = cBuffer_Read(cbuffer, &chr);
-			*(string++) = chr;
+			*string = chr;
+			string++;
 		} while (chr != sTerminator || err != CBUFFER_OK);
 	}
 	else
@@ -91,6 +94,17 @@ CBUFFER_ERR cBuffer_Read(cBuffer_t* cbuffer,uint8_t* data)
 	}
 	*data = cbuffer->buffer[cbuffer->read];
 	cbuffer->read = (cbuffer->read+1) & (cbuffer->size-1);
+	return CBUFFER_OK;
+}
+
+CBUFFER_ERR cBuffer_Peek(cBuffer_t* cbuffer,uint8_t* data, uint8_t*read)
+{
+	if (cBuffer_Length(cbuffer) == 0)
+	{
+		return CBUFFER_EMPTY;
+	}
+	*data = cbuffer->buffer[*read];
+	*read = ((*read)+1) & (cbuffer->size-1);
 	return CBUFFER_OK;
 }
 
