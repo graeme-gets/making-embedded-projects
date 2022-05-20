@@ -5,6 +5,7 @@
 "./Core/GY521/Src/gy521.o"
 "./Core/GY521/Src/mpu6050.o"
 "./Core/Helpers/Src/stringHelpers.o"
+"./Core/LC709203F/Src/lc709203.o"
 "./Core/Src/dma.o"
 "./Core/Src/gpio.o"
 "./Core/Src/i2c.o"

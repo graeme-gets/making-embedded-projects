@@ -1,0 +1,43 @@
+/*
+ * lc709203.h
+ *
+ *  Created on: 18 May 2022
+ *      Author: GraemeGets
+ */
+
+#ifndef LC709203F_INC_LC709203_H_
+#define LC709203F_INC_LC709203_H_
+
+#include "main.h"
+#define LC709302_ADRESS	0x16
+#define LC709302_REG_BEFORE_RSOC 	0x04
+#define LC709302_REG_THERM_B		0x06
+#define LC709302_REG_INITIAL_RSOC	0x07
+#define LC709302_REG_CELL_TEMP		0x08
+#define LC709302_REG_CELL_VOLTAGE 	0x09
+#define LC709302_REG_CELL_DIR		0x0A
+#define LC709302_REG_APA			0x0B
+#define LC709302_REG_APT			0x0C
+#define LC709302_REG_RSOC			0x0D
+#define LC709302_REG_ITE			0x0F
+#define LC709302_REG_IC_VERSION		0x11
+#define LC709302_REG_C_PARAMETER	0x12
+#define LC709302_REG_ALARM_LOW		0x13
+#define LC709302_REG_ALARM_LOW_CELL	0x14
+#define LC709302_REG_POWER_MODE		0x15
+#define LC709302_REG_STATUS_BIT		0x16
+#define LC709302_REG_N_PARAMETER	0x1A
+
+
+typedef enum{
+	LC798_OK = 01u,
+	LC798_COMM_ERROR = 02U,
+}eLC709203_Error_t;
+
+
+eLC709203_Error_t lc709203_getCellVoltage(uint16_t *voltage);
+eLC709203_Error_t lc709203_getCellTemp(uint16_t *voltage);
+eLC709203_Error_t lc709203_getId(uint16_t *version);
+
+
+#endif /* LC709203F_INC_LC709203_H_ */

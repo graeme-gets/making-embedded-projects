@@ -9,6 +9,7 @@
 //		3. Implement the function, using ConsoleReceiveParam<Type> to get the parameters from the buffer.
 
 #include <string.h>
+#include <stdlib.h>
 #include "consoleCommands.h"
 #include "console.h"
 #include "consoleIo.h"
@@ -16,13 +17,17 @@
 #include "mpu6050.h"
 #include "main.h"
 #include "stdio.h"
+#include "lc709203.h"
 
 
 //ToDo: Make this configurable
 //TODO: Make module for RTC control
 extern RTC_HandleTypeDef hrtc;
 
-
+uint8_t uninitGlobalVar;
+uint8_t initGlobalVar = 'A';
+const uint8_t constVar;
+static uint8_t staticVar;
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -36,6 +41,8 @@ static eCommandResult_T ConsoleCommandDateQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
 
 
 
@@ -50,9 +57,51 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
-	{"accel?", &ConsoleCommandAccelQuery, HELP("Set the current date (DD-MM-YY)")},
+	{"accel?", &ConsoleCommandAccelQuery, HELP("Get Acceleromiter Data")},
+	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
+	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
+
+
+static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[])
+{
+	uint8_t funcVar;
+
+	char msg[30];
+	register int SP __asm("r13");
+
+
+	sprintf(msg,"-- CPU Details --");
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Stack Pointer \t\t%#08x",SP);
+	ConsoleSendLine(msg);
+
+	unsigned int* HP = malloc(1);
+	*HP=0xAB;
+
+	sprintf(msg,"Heap Pointer \t\t%#08x",(unsigned int)HP-1);
+	ConsoleSendLine(msg);
+	free(HP);
+
+	sprintf(msg,"Initialised global variable \t\t%#08x",(unsigned int)(&initGlobalVar));
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Un-initialised global variable \t\t%#08x",(unsigned int)&uninitGlobalVar);
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Const variable \t\t%#08x",(unsigned int)&constVar);
+		ConsoleSendLine(msg);
+
+	sprintf(msg,"Static variable \t\t%#08x",(unsigned int)&staticVar);
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Function variable \t\t%#08x",(unsigned int)&funcVar);
+	ConsoleSendLine(msg);
+
+	return CONSOLE_SUCCESS;
+}
 
 /***********************************************************
  * Set RTC Date
@@ -189,6 +238,34 @@ static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
 
 }
 
+
+static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[])
+{
+	uint16_t voltage;
+	uint16_t temp;
+	uint16_t version;
+	char msg[50];
+	lc709203_getCellVoltage(&voltage);
+	lc709203_getCellTemp(&temp);
+	lc709203_getId(&version);
+
+	sprintf(msg,"-- Lipo Cell Details --");
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Monitor Version: %d",version);
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Cell Voltage: %1.4f v",((double)voltage/1000));
+	ConsoleSendLine(msg);
+
+	sprintf(msg,"Cell Temp: %1.2f v",((double)temp/100));
+	ConsoleSendLine(msg);
+
+
+
+	return COMMAND_SUCCESS;
+
+}
 
 
 /***********************************************************

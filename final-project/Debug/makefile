@@ -13,6 +13,7 @@ RM := rm -rf
 -include Core/WS2812/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Core/LC709203F/Src/subdir.mk
 -include Core/Helpers/Src/subdir.mk
 -include Core/GY521/Src/subdir.mk
 -include Core/Cli/Src/subdir.mk
