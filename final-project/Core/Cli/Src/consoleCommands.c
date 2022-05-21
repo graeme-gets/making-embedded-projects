@@ -19,6 +19,8 @@
 #include "stdio.h"
 #include "lc709203.h"
 
+#include "spi.h"
+
 
 //ToDo: Make this configurable
 //TODO: Make module for RTC control
@@ -43,6 +45,7 @@ static eCommandResult_T ConsoleCommandTimeSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
 
 
 
@@ -57,12 +60,37 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
-	{"accel?", &ConsoleCommandAccelQuery, HELP("Get Acceleromiter Data")},
+	{"accel?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data")},
 	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
 	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
+	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
+static eCommandResult_T ConsoleCommandMemTest(const char buffer[])
+{
+	char msg[50];
+	uint32_t Temp = 0;
+	uint8_t temp0 = 0, temp1 = 0, temp2 = 0;
+	uint8_t reg = 0x4B;
+	uint8_t id[8];
+	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 0);
+
+	HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
+	for (uint8_t i = 0; i < 4; i++)
+		HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
+
+	for (uint8_t i = 0; i < 8; i++)
+		HAL_SPI_TransmitReceive(&hspi1, &reg, &id[i], 1, 100);
+
+
+	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 1);
+	Temp = (temp0 << 16) | (temp1 << 8) | temp2;
+	sprintf(msg,"Flash Mem Id \t%#02x %#02x %#02x %#02x %#02x %#02x %#02x %#02x ",id[0],id[1],id[2],id[3],id[4],id[5],id[6],id[7]);
+	ConsoleSendLine(msg);
+
+	return CONSOLE_SUCCESS;
+}
 
 static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[])
 {
