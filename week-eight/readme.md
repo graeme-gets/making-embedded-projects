@@ -1,6 +1,6 @@
-#Week Eight
+# Week Eight
 
-###Output from program
+### Output from program
 
 Item|pointer
 -|-
@@ -12,7 +12,7 @@ Static variable |		0x200002f5
 Function variable 	|	0x2001ffc3
 Const variable 	|	0x800c918
 
-##Linker File info
+## Linker File info
 ```
 MEMORY
 {
@@ -22,7 +22,7 @@ MEMORY
 ```
 
 
-##Map file conformation
+## Map file conformation
 
 
 
@@ -50,7 +50,7 @@ Notes:
 2. Variables are showing in RAM memory space 
 3. Constant Variable is showing in FLASH memory space
 
-###Initialised and Un-initialised variables 
+### Initialised and Un-initialised variables 
 
 ```
 /* Initialized data sections into "RAM" Ram type memory */
