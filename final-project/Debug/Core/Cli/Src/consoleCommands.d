@@ -41,6 +41,8 @@ Core/Cli/Src/consoleCommands.o: ../Core/Cli/Src/consoleCommands.c \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/GY521/Inc/mpu6050.h \
  ../Core/Inc/i2c.h ../Core/Inc/main.h \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/LC709203F/Inc/lc709203.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Helpers/Inc/stringHelpers.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/LedController/Inc/ledController.h \
  ../Core/Inc/spi.h
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleCommands.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
@@ -86,4 +88,6 @@ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/LC709203F/Inc/lc709203.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Helpers/Inc/stringHelpers.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/LedController/Inc/ledController.h:
 ../Core/Inc/spi.h:

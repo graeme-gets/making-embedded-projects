@@ -18,6 +18,9 @@
 #include "main.h"
 #include "stdio.h"
 #include "lc709203.h"
+#include "stringHelpers.h"
+
+#include "ledController.h"
 
 #include "spi.h"
 
@@ -36,8 +39,7 @@ static uint8_t staticVar;
 
 static eCommandResult_T ConsoleCommandVer(const char buffer[]);
 static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
-static eCommandResult_T ConsoleCommandLedToggle(const char buffer[]);
-static eCommandResult_T ConsoleCommandLedQuery(const char buffer[]);
+
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
@@ -46,6 +48,7 @@ static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
+static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
 
 
 
@@ -54,8 +57,6 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 
     {"help", &ConsoleCommandHelp, HELP("Lists the commands available")},
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
-	{"led", &ConsoleCommandLedToggle, HELP("Turns the Blue LED on or off (1==ON; 0=OFF")},
-	{"led?", &ConsoleCommandLedQuery, HELP("Get the state of the LED")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
@@ -64,31 +65,86 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
 	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
 	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
+	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
+static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
+{
+	uint32_t startIndex;
+	eCommandResult_T result;
+	int16_t faceNumber;
+	result = ConsoleParamFindN(buffer,1,&startIndex);
+
+	if (result != COMMAND_SUCCESS)
+		return result;
+
+	uint8_t command = buffer[startIndex];
+	switch (command)
+	{
+		case 'f':
+
+			result = ConsoleReceiveParamInt16(buffer, 2, &faceNumber);
+			if (result != COMMAND_SUCCESS)
+			{
+				ConsoleSendLine("Invalid Face ID");
+				return COMMAND_PARAMETER_ERROR;
+			}
+
+			if (faceNumber >= PIXEL_RINGS)
+			{
+				ConsoleSendLine("Invalid Face ID - Must be Zero Index");
+				return COMMAND_PARAMETER_ERROR;
+			}
+
+
+			result = ConsoleParamFindN(buffer,3,&startIndex);
+			uint8_t colour = buffer[startIndex];
+			if ('r' == colour)
+				ledSetFaceColour(faceNumber,0xAA,00,0);
+			else if ('g' == colour)
+				ledSetFaceColour(faceNumber,0x0,0xAA,0);
+			else if ('b' == colour)
+				ledSetFaceColour(faceNumber,0x0,0x0,0xAA);
+			break;
+		case 'o':
+			ledAllOff();
+			break;
+		case'd':
+				ledDance();
+			break;
+		default :
+			return CONSOLE_ERROR;
+			break;
+	}
+
+
+	return CONSOLE_SUCCESS;
+
+}
+
 static eCommandResult_T ConsoleCommandMemTest(const char buffer[])
 {
-	char msg[50];
-	uint32_t Temp = 0;
-	uint8_t temp0 = 0, temp1 = 0, temp2 = 0;
-	uint8_t reg = 0x4B;
-	uint8_t id[8];
-	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 0);
-
-	HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
-	for (uint8_t i = 0; i < 4; i++)
-		HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
-
-	for (uint8_t i = 0; i < 8; i++)
-		HAL_SPI_TransmitReceive(&hspi1, &reg, &id[i], 1, 100);
-
-
-	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 1);
-	Temp = (temp0 << 16) | (temp1 << 8) | temp2;
-	sprintf(msg,"Flash Mem Id \t%#02x %#02x %#02x %#02x %#02x %#02x %#02x %#02x ",id[0],id[1],id[2],id[3],id[4],id[5],id[6],id[7]);
-	ConsoleSendLine(msg);
-
+//	char msg[50];
+//	uint32_t Temp;
+//	uint8_t temp0 = 0, temp1 = 0, temp2 = 0;
+//	uint8_t reg = 0x4B;
+//	uint8_t id[8];
+//	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 0);
+//
+//	HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
+//	for (uint8_t i = 0; i < 4; i++)
+//		HAL_SPI_TransmitReceive(&hspi1, &reg, &temp0, 1, 100);
+//
+//	for (uint8_t i = 0; i < 8; i++)
+//		HAL_SPI_TransmitReceive(&hspi1, &reg, &id[i], 1, 100);
+//
+//
+//	HAL_GPIO_WritePin(SPI_MEM_CS_GPIO_Port, SPI_MEM_CS_Pin, 1);
+//	Temp = (temp0 << 16) | (temp1 << 8) | temp2;
+//	sprintf(msg,"Flash Mem Id \t%#02x %#02x %#02x %#02x %#02x %#02x %#02x %#02x ",id[0],id[1],id[2],id[3],id[4],id[5],id[6],id[7]);
+//	ConsoleSendLine(msg);
+	ConsoleSendLine("Commented out");
 	return CONSOLE_SUCCESS;
 }
 
@@ -113,11 +169,11 @@ static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[])
 	ConsoleSendLine(msg);
 	free(HP);
 
-	sprintf(msg,"Initialised global variable \t\t%#08x",(unsigned int)(&initGlobalVar));
-	ConsoleSendLine(msg);
+//	sprintf(msg,"Initialised global variable \t\t%#08x",(unsigned int)(&initGlobalVar));
+//	ConsoleSendLine(msg);
 
-	sprintf(msg,"Un-initialised global variable \t\t%#08x",(unsigned int)&uninitGlobalVar);
-	ConsoleSendLine(msg);
+//	sprintf(msg,"Un-initialised global variable \t\t%#08x",(unsigned int)&uninitGlobalVar);
+//	ConsoleSendLine(msg);
 
 	sprintf(msg,"Const variable \t\t%#08x",(unsigned int)&constVar);
 		ConsoleSendLine(msg);
@@ -250,23 +306,6 @@ static eCommandResult_T ConsoleCommandTimeSet(const char buffer[])
 }
 
 
-static eCommandResult_T ConsoleCommandLedToggle(const char buffer[])
-{
-	eCommandResult_T result;
-	int16_t parameterInt;
-	result = ConsoleReceiveParamInt16(buffer, 1, &parameterInt);
-	if (result == COMMAND_PARAMETER_ERROR)
-			return result;
-	if (0 == parameterInt )
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,1);
-	else
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,0);
-
-	return COMMAND_SUCCESS;
-
-}
-
-
 static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[])
 {
 	uint16_t voltage;
@@ -342,16 +381,6 @@ static eCommandResult_T ConsoleCommandDateQuery(const char buffer[])
 	return COMMAND_SUCCESS;
 }
 
-
-static eCommandResult_T ConsoleCommandLedQuery(const char buffer[])
-{
-	if (HAL_GPIO_ReadPin(LED_GPIO_Port, LED_Pin)==0)
-			ConsoleIoSendString("LED is ON ");
-	else
-		ConsoleIoSendString("LED is OFF ");
-	ConsoleIoSendString(STR_ENDLINE);
-	return COMMAND_SUCCESS;
-}
 
 
 

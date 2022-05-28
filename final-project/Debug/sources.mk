@@ -26,6 +26,7 @@ Core/Cli/Src \
 Core/GY521/Src \
 Core/Helpers/Src \
 Core/LC709203F/Src \
+Core/LedController/Src \
 Core/Src \
 Core/Startup \
 Core/WS2812/Src \

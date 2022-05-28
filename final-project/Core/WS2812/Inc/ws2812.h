@@ -7,8 +7,8 @@
 #define LED_TIMER htim1
 #define LED_DMA hdma_tim1_ch1
 #define LED_DMA_CHANNEL TIM_CHANNEL_1
-#define NUM_PIXELS (12)
-#define LED_BRIGHTNESS 50 // 50%
+#define NUM_PIXELS (72)
+#define LED_BRIGHTNESS 30 // 50%
 
 void led_set_RGB(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
 void led_set_RGBW(uint8_t index, uint8_t r, uint8_t g, uint8_t b, uint8_t w);

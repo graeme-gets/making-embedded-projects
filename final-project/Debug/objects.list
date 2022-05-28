@@ -6,6 +6,7 @@
 "./Core/GY521/Src/mpu6050.o"
 "./Core/Helpers/Src/stringHelpers.o"
 "./Core/LC709203F/Src/lc709203.o"
+"./Core/LedController/Src/ledController.o"
 "./Core/Src/dma.o"
 "./Core/Src/gpio.o"
 "./Core/Src/i2c.o"

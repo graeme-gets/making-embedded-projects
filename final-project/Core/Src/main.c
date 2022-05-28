@@ -34,6 +34,7 @@
 #include "console.h"
 #include "ws2812.h"
 #include "mpu6050.h"
+#include "ledController.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,9 +103,8 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t angle = 0;
-  const uint8_t angle_difference = 11;
 
+  ledAllOff();
   ConsoleInit();
   ConsoleSendString("Console Initialised\n");
   if (MPU6050_Init(&hi2c1) == 1)
@@ -126,18 +126,19 @@ int main(void)
   {
 	  ConsoleProcess();
 
-
-	  for(uint8_t i = 0; i < NUM_PIXELS /* Change that to your amount of LEDs */; i++) {
-	  	  			// Calculate color
-	  	  			uint32_t rgb_color = hsl_to_rgb(angle + (i * angle_difference), 255, 127);
-	  	  			// Set color
-	  	  			led_set_RGB(i, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
-	  	  		}
-	  	  		// Write to LED
-	  	    	++angle;
-	  	  		led_render();
-	  	  		// Some delay
-	  	  		HAL_Delay(10);
+//	  uint8_t angle = 0;
+//	  const uint8_t angle_difference = 11;
+//	  for(uint8_t i = 0; i < NUM_PIXELS /* Change that to your amount of LEDs */; i++) {
+//	  	  			// Calculate color
+//	  	  			uint32_t rgb_color = hsl_to_rgb(angle + (i * angle_difference), 255, 127);
+//	  	  			// Set color
+//	  	  			led_set_RGB(i, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
+//	  	  		}
+//	  	  		// Write to LED
+//	  	    	++angle;
+//	  	  		led_render();
+//	  	  		// Some delay
+//	  	  		HAL_Delay(10);
 
 
     /* USER CODE END WHILE */
