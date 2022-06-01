@@ -45,7 +45,8 @@ _Min_Stack_Size = 0x400 ; /* required amount of stack */
 MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 512K
+  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 511K
+  DATA (r)   	  : ORIGIN = 0x807FC00	, LENGTH = 1k
 }
 
 /* Sections */
@@ -58,6 +59,13 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+
+.systemConfig (NOLOAD) :
+  {
+   . = ALIGN(4);
+   KEEP(*(.systemConfig))
+   . = ALIGN(4);
+  } > DATA
 
   /* The program code and other data into "FLASH" Rom type memory */
   .text :

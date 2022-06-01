@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "crc.h"
 #include "dma.h"
 #include "i2c.h"
 #include "rtc.h"
@@ -35,6 +36,8 @@
 #include "ws2812.h"
 #include "mpu6050.h"
 #include "ledController.h"
+#include "orientation.h"
+#include "systemConfig.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,7 +84,8 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -102,7 +106,11 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
+
+  sysConfigInit();
+
 
   ledAllOff();
   ConsoleInit();
@@ -116,7 +124,7 @@ int main(void)
 	  ConsoleSendString("MPU6050 Initialised\n");
   }
   ConsolePrintPrompt();
-
+  uint8_t lastFace = 255;
 
   /* USER CODE END 2 */
 
@@ -126,19 +134,37 @@ int main(void)
   {
 	  ConsoleProcess();
 
-//	  uint8_t angle = 0;
-//	  const uint8_t angle_difference = 11;
-//	  for(uint8_t i = 0; i < NUM_PIXELS /* Change that to your amount of LEDs */; i++) {
-//	  	  			// Calculate color
-//	  	  			uint32_t rgb_color = hsl_to_rgb(angle + (i * angle_difference), 255, 127);
-//	  	  			// Set color
-//	  	  			led_set_RGB(i, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
-//	  	  		}
-//	  	  		// Write to LED
-//	  	    	++angle;
-//	  	  		led_render();
-//	  	  		// Some delay
-//	  	  		HAL_Delay(10);
+	  MPU6050_t data;
+	uint8_t face;
+	char msg[30];
+	for (uint8_t cnt=0;cnt<20;cnt++)
+	{
+		MPU6050_Read_All(&I2C_MPU6050, &data);
+	}
+
+	face = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+	if (255 == face)
+	{
+		ledAllOff();
+	}
+
+	else if (face != lastFace)
+	{
+		lastFace = face;
+		sprintf(msg,"Angle X: %f Y: %f",data.KalmanAngleX, data.KalmanAngleY);
+		ConsoleSendLine(msg);
+
+		uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
+
+		ledAllOff();
+		ledSetFaceColour(face, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
+		ledRender();
+
+		sprintf(msg,"Detected face %i is up",face);
+		ConsoleSendLine(msg);
+	}
+	 HAL_Delay(200);
+
 
 
     /* USER CODE END WHILE */

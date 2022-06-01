@@ -11,12 +11,15 @@ RM := rm -rf
 -include sources.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/WS2812/Src/subdir.mk
+-include Core/SystemConfig/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Core/Orinentation/Src/subdir.mk
 -include Core/LedController/Src/subdir.mk
 -include Core/LC709203F/Src/subdir.mk
 -include Core/Helpers/Src/subdir.mk
 -include Core/GY521/Src/subdir.mk
+-include Core/EE/subdir.mk
 -include Core/Cli/Src/subdir.mk
 -include Core/CBuffer/Src/subdir.mk
 -include objects.mk

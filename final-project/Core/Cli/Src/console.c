@@ -75,7 +75,7 @@ void ConsoleInit(void)
 	uint32_t i;
 
 	ConsoleIoInit();
-	ConsoleIoSendString("Dodec Timer - A Thousand Projects");
+	ConsoleIoSendString("Dodeca Timer - A Thousand Projects");
 	ConsoleIoSendString(STR_ENDLINE);
 	ConsoleIoSendString(CONSOLE_PROMPT);
 

@@ -46,9 +46,9 @@
 #define GYRO_CONFIG_REG 0x1B
 #define GYRO_XOUT_H_REG 0x43
 
-#define CAL_X 	-0.069
-#define CAL_Y 	-0.045
-#define CAL_Z	-0.059
+#define CAL_X 	-384
+#define CAL_Y 	-1393
+#define CAL_Z	-515346
 
 // Setup MPU6050
 #define MPU6050_ADDR 0xD0
@@ -120,14 +120,20 @@ void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
          I have configured FS_SEL = 0. So I am dividing by 16384.0
          for more details check ACCEL_CONFIG Register              ****/
 
+    // Callibrate
+   // DataStruct->Accel_X_RAW += CAL_X;
+   // DataStruct->Accel_Y_RAW += CAL_Y;
+  //  DataStruct->Accel_Z_RAW += CAL_Y;
+
+
     DataStruct->Ax = DataStruct->Accel_X_RAW / 16384.0;
     DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
     DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
 
-    // Callibrate
-    DataStruct->Ax += CAL_X;
-    DataStruct->Ay += CAL_Y;
-    DataStruct->Az += CAL_Y;
+
+    if (DataStruct->Ax < 0.09) DataStruct->Ax = 0;
+	if (DataStruct->Ay < 0.09) DataStruct->Ay= 0;
+	if (DataStruct->Az < 0.09) DataStruct->Az = 0;
 
 
 }
@@ -182,14 +188,19 @@ void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
     DataStruct->Gyro_Y_RAW = (int16_t) (Rec_Data[10] << 8 | Rec_Data[11]);
     DataStruct->Gyro_Z_RAW = (int16_t) (Rec_Data[12] << 8 | Rec_Data[13]);
 
+    // Callibrate
+	DataStruct->Accel_X_RAW += CAL_X;
+	DataStruct->Accel_Y_RAW += CAL_Y;
+	DataStruct->Accel_Z_RAW += CAL_Y;
+
+
     DataStruct->Ax = DataStruct->Accel_X_RAW / 16384.0;
     DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
     DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
 
-    // Callibrate
-       //DataStruct->Ax += CAL_X;
-      // DataStruct->Ay += CAL_Y;
-       //DataStruct->Az += CAL_Y;
+
+
+
 
     if (DataStruct->Ax < 0.09) DataStruct->Ax = 0;
     if (DataStruct->Ay < 0.09) DataStruct->Ay= 0;

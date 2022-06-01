@@ -19,7 +19,7 @@
 #include "stdio.h"
 #include "lc709203.h"
 #include "stringHelpers.h"
-
+#include "orientation.h"
 #include "ledController.h"
 
 #include "spi.h"
@@ -49,6 +49,7 @@ static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
 static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
+static eCommandResult_T ConsoleCommandFaceQuery(const char buffer[]);
 
 
 
@@ -61,13 +62,44 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
-	{"accel?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data")},
+	{"acc?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data [r n - Read n times]")},
 	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
 	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
 	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
 	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
+	{"face?", &ConsoleCommandFaceQuery, HELP("Detect Face Up")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
+
+
+static eCommandResult_T ConsoleCommandFaceQuery(const char buffer[])
+{
+	IGNORE_UNUSED_VARIABLE(buffer);
+	MPU6050_t data;
+	uint8_t face;
+	char msg[30];
+	for (uint8_t cnt=0;cnt<20;cnt++)
+	{
+		MPU6050_Read_All(&I2C_MPU6050, &data);
+	}
+
+
+	sprintf(msg,"Angle X: %f Y: %f",data.KalmanAngleX, data.KalmanAngleY);
+	ConsoleSendLine(msg);
+
+	face = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+
+	uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
+
+	ledAllOff();
+	ledSetFaceColour(face, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
+	ledRender();
+
+	sprintf(msg,"Detected face %i is up",face);
+	ConsoleSendLine(msg);
+
+	return COMMAND_SUCCESS;
+}
 
 static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 {
@@ -106,9 +138,13 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 				ledSetFaceColour(faceNumber,0x0,0xAA,0);
 			else if ('b' == colour)
 				ledSetFaceColour(faceNumber,0x0,0x0,0xAA);
+
+			ledRender();
+
 			break;
 		case 'o':
 			ledAllOff();
+			ledRender();
 			break;
 		case'd':
 				ledDance();
@@ -344,16 +380,71 @@ static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[])
  ***********************************************************/
 static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 {
-
+	int16_t n;
 	MPU6050_t data;
-	char msg[50];
-	MPU6050_Read_All(&I2C_MPU6050, &data);
+	char msg[100];
+	uint32_t paramIndex;
+	float rawAveX = 0;
+	float rawAveY = 0;
+	float rawAveZ = 0;
+	ConsoleParamFindN(buffer, 1 , &paramIndex);
 
-	sprintf(msg,"X Angle\t: %f \t\t Y Angle\t: %f\n",data.KalmanAngleX, data.KalmanAngleY);
-	ConsoleSendLine(msg);
+	if (0 == paramIndex)
+	{
+		MPU6050_Read_All(&I2C_MPU6050, &data);
+		sprintf(msg,"X Angle\t: %f \t\t Y Angle\t: %f\n",data.KalmanAngleX, data.KalmanAngleY);
+		ConsoleSendLine(msg);
+		return COMMAND_SUCCESS;
+	}
 
+
+	// Read Raw n Times (Param r n where n = number of reads
+	switch (buffer[paramIndex])
+	{
+		default:
+				return COMMAND_PARAMETER_ERROR;
+		case 'r':
+				ConsoleReceiveParamInt16(buffer, 2, &n);
+				for (uint8_t cnt = 0;cnt<n;cnt++)
+				{
+					MPU6050_Read_Accel(&I2C_MPU6050, &data);
+					rawAveX += data.Accel_X_RAW;
+					rawAveY += data.Accel_Y_RAW;
+					rawAveZ += data.Accel_Z_RAW;
+					sprintf(msg,"RAW:[X:%5i Y:%5i Z:5%i] G:[X:%2f Y:%2f Z:%2f]",data.Accel_X_RAW, data.Accel_Y_RAW,data.Accel_Z_RAW, data.Ax,data.Ay,data.Az);
+					ConsoleSendLine(msg);
+				}
+				rawAveX = rawAveX/n;
+				rawAveY = rawAveY/n;
+				rawAveZ = rawAveZ/n;
+				sprintf(msg,"\nRAW Average :[X:%5f Y:%5f Z:5%f]\n",rawAveX,rawAveY,rawAveZ);
+				ConsoleSendLine(msg);
+				break;
+		case 'a':
+				ConsoleReceiveParamInt16(buffer, 2, &n);
+				for (uint8_t cnt = 0;cnt<n;cnt++)
+				{
+					MPU6050_Read_All(&I2C_MPU6050, &data);
+					sprintf(msg,"A:[X:%2f Y:%2f]",data.KalmanAngleX, data.KalmanAngleY);
+					ConsoleSendLine(msg);
+
+				}
+				break;
+		case 'k':
+				ConsoleSendLine("--* Kalman Angle *--");
+				for (uint8_t cnt = 0;cnt<50;cnt++)
+				{
+					MPU6050_Read_All(&I2C_MPU6050, &data);
+				}
+				sprintf(msg,"[X:%2f Y:%2f]\n",data.KalmanAngleX, data.KalmanAngleY);
+				ConsoleSendLine(msg);
+
+			break;
+	}
 
 	return COMMAND_SUCCESS;
+
+
 
 }
 

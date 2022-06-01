@@ -14,6 +14,11 @@ void ledAllOff()
 	{
 		led_set_RGB(i,0x0,0,0);
 	}
+
+}
+
+void ledRender()
+{
 	led_render();
 }
 
@@ -25,7 +30,7 @@ void ledSetFaceColour(uint8_t face, uint8_t red, uint8_t green, uint8_t blue)
 	{
 		led_set_RGB(i,red,green,blue);
 	}
-	led_render();
+
 }
 
 
@@ -41,8 +46,8 @@ void ledDance()
 			uint32_t rgb_color = hsl_to_rgb(angle + (i * angle_difference), 255, 127);
 			// Set color
 			led_set_RGB(i, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
-
-			led_set_RGB(i-3, 0,0,0);
+			if (i>1)
+				led_set_RGB(i-1, 0,0,0);
 			++angle;
 			led_render();
 
