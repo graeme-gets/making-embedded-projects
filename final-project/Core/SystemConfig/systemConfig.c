@@ -10,12 +10,13 @@
 #include "string.h"
 
 
-#define SYSTEM_CONFIG_ADDRESS 0x807FC00 // TODO: There must be a way to reference this from the linker file? Extern?
+
 
 __attribute__((__section__(".systemConfig"))) const char systemConfigROPtr; // TODO: Better if this was a struct
 
-systemConfig_t *systemConfigRO = (systemConfig_t*)&systemConfigROPtr;
 
+systemConfig_t *systemConfigRO = (systemConfig_t*)&systemConfigROPtr;
+const uint32_t SYSTEM_CONFIG_ADDRESS = (uint32_t)&systemConfigROPtr;
 
 
 /***********************************************************
@@ -24,27 +25,28 @@ systemConfig_t *systemConfigRO = (systemConfig_t*)&systemConfigROPtr;
  *
  ***********************************************************/
 static eSYSConfig_t sysConfigValidateConfig();
-static void sysConfigRead();
+
 
 systemConfig_t systemConfig= {};
 
-const uint8_t SYS_CONFIG_SIZE = sizeof(systemConfig.faceConfig)/4;
+static uint16_t SYS_CONFIG_SIZE ;
+static uint16_t SYS_CONFIG_ALL_SIZE;
+static uint16_t SYS_CONFIG_SIZE_TASK;
+static uint16_t SYS_CONFIG_SIZE_DODEC;
+
+
 
 void sysConfigInit()
 {
-	sysConfigRead();
-	if (SYS_CONFIG_BAD_CHECKSUM ==  sysConfigValidateConfig())
-	{
-		for (uint8_t i=0;i<FACE_COUNT;i++)
-		{
-			systemConfig.faceConfig[i].colour = 0;
-			systemConfig.faceConfig[i].faceStatus = FACE_NOT_CONFIGURED;
-			strcpy(systemConfig.faceConfig[i].name,"NOT CONFIGURED!");
-			systemConfig.faceConfig[i].reserved = 0;
-			systemConfig.faceConfig[i].taskId = 0;
-		}
-		sysConfigSave();
-	}
+	SYS_CONFIG_SIZE = sizeof(systemConfig.configItems)/4;
+	SYS_CONFIG_ALL_SIZE = sizeof(systemConfig)/4;
+	SYS_CONFIG_SIZE_TASK = sizeof(systemConfig.configItems.tasksConfig);
+	SYS_CONFIG_SIZE_DODEC = sizeof(systemConfig.configItems.dodecaConfig);
+}
+
+systemConfig_t *systemConfigGet()
+{
+	return &systemConfig;
 }
 
 static eSYSConfig_t sysConfigValidateConfig()
@@ -60,30 +62,30 @@ static eSYSConfig_t sysConfigValidateConfig()
 uint32_t sysConfigCalcChecksum()
 {
 	uint32_t crc;
-	crc =  HAL_CRC_Calculate(&hcrc, (uint32_t*)systemConfig.faceConfig, SYS_CONFIG_SIZE);
+	crc =  HAL_CRC_Calculate(&hcrc,  (uint32_t*)&systemConfig.configItems, SYS_CONFIG_SIZE);
 	return crc;
 }
 
-void sysConfigSetFace(uint8_t id,configFace_t face)
-{
-	systemConfig.faceConfig[id] = face;
-}
 
-void sysConfigGetFace(uint8_t id, configFace_t * face)
-{
-//	*face =  systemConfigRO->faceConfig[id];
-}
 
-static void sysConfigRead()
+
+eSYSConfig_t sysConfigRead()
 {
-	Flash_Read_Data(SYSTEM_CONFIG_ADDRESS,(uint32_t*) &systemConfig,SYS_CONFIG_SIZE );
+	Flash_Read_Data(SYSTEM_CONFIG_ADDRESS,(uint32_t*) &systemConfig,SYS_CONFIG_ALL_SIZE );
+	//Flash_Read_Data(SYSTEM_CONFIG_ADDRESS,(uint32_t*) &systemConfig,5 );
+	if (SYS_CONFIG_BAD_CHECKSUM == sysConfigValidateConfig())
+		return SYS_CONFIG_BAD_DATA;
+	else
+		return TASK_OK;
 }
 
 void sysConfigSave()
 {
 	uint32_t crc = sysConfigCalcChecksum();
 	systemConfig.checksum = crc;
-	Flash_Write_Data(SYSTEM_CONFIG_ADDRESS, (uint32_t *)&systemConfig, SYS_CONFIG_SIZE+1);
+	uint32_t result;
+	result = Flash_Write_Data(SYSTEM_CONFIG_ADDRESS, (uint32_t *)&systemConfig, SYS_CONFIG_ALL_SIZE);
+	//TODO: Handle a Confug Save Error - Hard Fault!
 }
 
 void sysConfigUpdateChecksum(uint32_t csm)

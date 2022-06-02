@@ -175,7 +175,7 @@ float Bytes2float(uint8_t * ftoa_bytes_temp)
 }
 
 
-uint32_t Flash_Write_Data (uint32_t StartSectorAddress, uint32_t *Data, uint16_t numberofwords)
+uint32_t Flash_Write_Data (uint32_t StartSectorAddress, uint32_t *Data, const uint16_t numberofwords)
 {
 
 	static FLASH_EraseInitTypeDef EraseInitStruct;
@@ -234,15 +234,15 @@ uint32_t Flash_Write_Data (uint32_t StartSectorAddress, uint32_t *Data, uint16_t
 }
 
 
-void Flash_Read_Data (uint32_t StartSectorAddress, uint32_t *RxBuf, uint16_t numberofwords)
+void Flash_Read_Data (uint32_t StartSectorAddress, uint32_t *RxBuf, const uint16_t numberofwords)
 {
-	while (1)
+	uint32_t sofar = numberofwords;
+	while (sofar)
 	{
-
 		*RxBuf = *(__IO uint32_t *)StartSectorAddress;
 		StartSectorAddress += 4;
 		RxBuf++;
-		if (!(numberofwords--)) break;
+		sofar--;
 	}
 }
 

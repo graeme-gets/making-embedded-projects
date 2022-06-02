@@ -52,17 +52,17 @@ static uint32_t ConsoleCommandMatch(const char* name, const char *buffer)
 {
 	int r;
 	char *cmdEnd =strchr(buffer, ' '); // look for first space
-	if (cmdEnd == 0x0)
+	if (cmdEnd == 0x0 || cmdEnd-buffer != strlen(name))
 	{
 			r =  strcmp(name,buffer) == 0;
 	}
 	else
 	{
 		r =  strncmp(name,buffer,strlen(name)) == 0;
+
 	}
 
 	return r;
-
 }
 
 
@@ -226,8 +226,6 @@ eCommandResult_T ConsoleReceiveParamInt16(const char * buffer, const uint8_t par
 		else
 			result =  COMMAND_PARAMETER_ERROR;
 	}
-
-
 	return result;
 }
 

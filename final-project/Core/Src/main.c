@@ -38,6 +38,7 @@
 #include "ledController.h"
 #include "orientation.h"
 #include "systemConfig.h"
+#include "Tasks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -84,7 +85,6 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
 	HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -109,10 +109,30 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
-  sysConfigInit();
-
-
   ledAllOff();
+  sysConfigInit();
+  systemConfig_t * config = systemConfigGet();
+  taskItems_t * taskItems = &config->configItems.tasksConfig;
+  taskInit(taskItems);
+
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP);
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPERR);
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_WRPERR);
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGAERR);
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGPERR);
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGSERR);
+
+  //if (SYS_CONFIG_BAD_DATA == sysConfigRead())
+	  sysConfigRead();
+  {
+	  taskSetDefaultAll();
+	  sysConfigSave();
+  }
+
+
+
+
+
   ConsoleInit();
   ConsoleSendString("Console Initialised\n");
   if (MPU6050_Init(&hi2c1) == 1)

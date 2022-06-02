@@ -7,7 +7,7 @@
 
 
 #include "mpu6050.h"
-
+#include "systemConfig.h"
 typedef struct
 {
 	uint8_t faceId;
@@ -18,7 +18,7 @@ typedef struct
 } faceTable_t;
 
 
-#define FACE_COUNT 12
+
 
 faceTable_t faceTable[12] = {
 		{	1,	-12	,	8	,	-11	,	9	},

@@ -69,6 +69,8 @@ void Error_Handler(void);
 #define SPI_MEM_MOSI_GPIO_Port GPIOA
 #define NEO_OUT_Pin GPIO_PIN_8
 #define NEO_OUT_GPIO_Port GPIOA
+#define ACCEL_INT_Pin GPIO_PIN_9
+#define ACCEL_INT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

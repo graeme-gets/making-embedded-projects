@@ -21,8 +21,11 @@
 #include "stringHelpers.h"
 #include "orientation.h"
 #include "ledController.h"
-
+#include "systemConfig.h"
+#include "ws2812.h"
 #include "spi.h"
+
+#include "Tasks.h"
 
 
 //ToDo: Make this configurable
@@ -49,7 +52,9 @@ static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
 static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
-static eCommandResult_T ConsoleCommandFaceQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandTaskSet(const char buffer[]);
+static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[]);
 
 
 
@@ -67,12 +72,73 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
 	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
 	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
-	{"face?", &ConsoleCommandFaceQuery, HELP("Detect Face Up")},
+	{"faceup?", &ConsoleCommandFaceUpQuery, HELP("Detect Face Up")},
+	{"task?", &ConsoleCommandTaskQuery, HELP("Display Task(s), No Param = list all, param = list specific")},
+	{"task", &ConsoleCommandTaskSet, HELP("Display Task(s), No Param = list all, param = list specific")},
+
+
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
 
-static eCommandResult_T ConsoleCommandFaceQuery(const char buffer[])
+static void displayTask(uint8_t id)
+{
+	char msg[120];
+	taskItem_t *task;
+	task = taskGet(id);
+	sprintf(msg,"Task: %d - %s\n\tColour: %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
+	ConsoleSendLine(msg);
+}
+
+static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
+{
+
+	// get the task Id to set
+	int16_t taskId;
+	if (COMMAND_SUCCESS != ConsoleReceiveParamInt16(buffer, 1, &taskId))
+	{
+		return COMMAND_PARAMETER_ERROR;
+	}
+	// Show the current face info
+	displayTask(taskId);
+	ConsoleSendLine("Edit:\n\t1. Set Name\n\t2. Set Colour\n\t3. Set Task");
+
+
+
+
+	return COMMAND_SUCCESS;
+}
+static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
+{
+	uint32_t param1;
+
+	if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 1, &param1))
+	{
+		// List all tasks
+		for (uint8_t f=0;f<TASK_COUNT_MAX;f++)
+		{
+			displayTask(f);
+		}
+	}
+	else
+	{
+		int16_t taskId;
+		ConsoleReceiveParamInt16(buffer, 1, &taskId );
+
+		if (taskId < 0 || taskId > FACE_COUNT-1)
+		{
+			ConsoleSendLine("Invalid Task number");
+			return COMMAND_PARAMETER_ERROR;
+		}
+
+		displayTask(taskId);
+
+	}
+	return COMMAND_SUCCESS;
+}
+
+
+static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 {
 	IGNORE_UNUSED_VARIABLE(buffer);
 	MPU6050_t data;

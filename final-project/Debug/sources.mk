@@ -23,6 +23,7 @@ C_DEPS :=
 SUBDIRS := \
 Core/CBuffer/Src \
 Core/Cli/Src \
+Core/Dodeca \
 Core/EE \
 Core/GY521/Src \
 Core/Helpers/Src \
@@ -32,6 +33,7 @@ Core/Orinentation/Src \
 Core/Src \
 Core/Startup \
 Core/SystemConfig \
+Core/Tasks \
 Core/WS2812/Src \
 Drivers/STM32F4xx_HAL_Driver/Src \
 
