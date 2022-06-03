@@ -31,6 +31,7 @@
 //ToDo: Make this configurable
 //TODO: Make module for RTC control
 extern RTC_HandleTypeDef hrtc;
+extern ledColours_t ledColours;
 
 uint8_t uninitGlobalVar;
 uint8_t initGlobalVar = 'A';
@@ -55,7 +56,12 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandTaskSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[]);
+static eCommandResult_T ConsoleCommandDodecaQuery(const char buffer[]);
+static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[]);
 
+static void displayDodeca(uint8_t id);
+static void displayTask(uint8_t id);
 
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
@@ -74,7 +80,10 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
 	{"faceup?", &ConsoleCommandFaceUpQuery, HELP("Detect Face Up")},
 	{"task?", &ConsoleCommandTaskQuery, HELP("Display Task(s), No Param = list all, param = list specific")},
-	{"task", &ConsoleCommandTaskSet, HELP("Display Task(s), No Param = list all, param = list specific")},
+	{"task", &ConsoleCommandTaskSet, HELP("Update Task \n\t n- name\n\tm - max duration\n\ti-min duration")},
+	{"save", &ConsoleCommandSaveConfig, HELP("Saves the current config to Flash")},
+	{"dodeca?", &ConsoleCommandDodecaQuery, HELP("Displays Dodeca Task, No Param = list all, param = list specific")},
+	{"dodeca", &ConsoleCommandDodecaSet, HELP("Set Dodeca Task, t-set task, m-set Max, i-set min")},
 
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
@@ -84,10 +93,146 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 static void displayTask(uint8_t id)
 {
 	char msg[120];
-	taskItem_t *task;
-	task = taskGet(id);
-	sprintf(msg,"Task: %d - %s\n\tColour: %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
+	char colourName[10];
+	taskItem_t *task = taskGet(id);
+	ledFindColour(task->colour,colourName);
+	sprintf(msg,"Task: %d - %s\n\tColour: %s %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,colourName,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
 	ConsoleSendLine(msg);
+}
+
+static void displayDodeca(uint8_t id)
+{
+	char msg[120];
+	char statename[20];
+	dodecaItem_t *dodeca = 0;
+	taskItem_t *task;
+	dodeca = dodecaGet(id);
+	task = taskGet(dodeca->taskId);
+
+	dodecaGetStateName(dodeca->state,statename);
+	sprintf(msg,"Dodeca: %i - %s\n\t \n\tState: %s\n\tMin Time: %d\n\tMax Time: %d",id,task->name,statename,dodeca->minTimeMins,dodeca->maxTimeMins);
+	ConsoleSendLine(msg);
+}
+
+static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
+{
+	// get the Dodeca Id to set
+	int16_t dodecaId;
+	int16_t value;
+	MPU6050_t data;
+	dodecaItem_t *dodeca;
+	taskItem_t *task;
+	char msg[50];
+
+		// get the command
+		uint32_t cmdIndex;
+		if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 1, &cmdIndex))
+		{
+			ConsoleSendLine("Please supply a command");
+			return COMMAND_PARAMETER_ERROR;
+		}
+
+		MPU6050ReadStable(&data);
+		dodecaId = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+
+
+		if (dodecaId< 0)
+		{
+			ConsoleSendLine("Face not detected");
+			return COMMAND_ERROR;
+		}
+		sprintf(msg,"Detected face: %i",dodecaId);
+		ConsoleSendLine(msg);
+
+		dodeca = dodecaGet(dodecaId);
+
+		switch (buffer[cmdIndex])
+		{
+		case 't' :
+				// Sets a task to the dodeca current facing up
+				if (DODECA_STATE_ACTIVE == dodeca->state)
+				{
+					ConsoleSendLine("Cannot change an Active Task");
+					return COMMAND_SUCCESS;
+				}
+
+
+				// Set the Task Id
+				if (COMMAND_SUCCESS != ConsoleReceiveParamInt16(buffer, 2, &value))
+				{
+					return COMMAND_PARAMETER_ERROR;
+				}
+
+				if (value > TASK_COUNT_MAX)
+				{
+					ConsoleSendLine("Invalid Task Id");
+					return COMMAND_PARAMETER_ERROR;
+				}
+
+				task = taskGet(value);
+
+				dodecaInitItem(dodecaId,task->defaultMinTime,task->defaultMaxTime,value);
+			break;
+
+		case 'm':
+				ConsoleReceiveParamInt16(buffer, 2, &value);
+				if (value <0)
+				{
+					ConsoleSendLine("Invalid Max time");
+					return COMMAND_PARAMETER_ERROR;
+				}
+				dodeca->maxTimeMins = value;
+			break;
+		case 'i':
+				ConsoleReceiveParamInt16(buffer, 2, &value);
+				if (value <0)
+				{
+					ConsoleSendLine("Invalid Min time");
+					return COMMAND_PARAMETER_ERROR;
+				}
+				dodeca->minTimeMins = value;
+			break;
+		}
+		// Show the current face info
+		displayDodeca(dodecaId);
+		return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommandDodecaQuery(const char buffer[])
+{
+	uint32_t param1;
+
+		if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 1, &param1))
+		{
+			// List all tasks
+			for (uint8_t f=0;f<DODECA_COUNT_MAX;f++)
+			{
+				displayDodeca(f);
+			}
+		}
+		else
+		{
+			int16_t taskId;
+			ConsoleReceiveParamInt16(buffer, 1, &taskId );
+
+			if (taskId < 0 || taskId > DODECA_COUNT_MAX-1)
+			{
+				ConsoleSendLine("Invalid Task number");
+				return COMMAND_PARAMETER_ERROR;
+			}
+
+			displayDodeca(taskId);
+
+		}
+		return COMMAND_SUCCESS;
+}
+
+
+static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[])
+{
+	sysConfigSave();
+	ConsoleSendLine("Config Saved!");
+	return COMMAND_SUCCESS;
 }
 
 static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
@@ -95,17 +240,81 @@ static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
 
 	// get the task Id to set
 	int16_t taskId;
+	char name[TASK_NAME_LENGHTH_MAX];
 	if (COMMAND_SUCCESS != ConsoleReceiveParamInt16(buffer, 1, &taskId))
 	{
 		return COMMAND_PARAMETER_ERROR;
 	}
+
+	if (taskId > TASK_COUNT_MAX)
+	{
+		ConsoleSendLine("Invalid Task ID");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+	// get the command
+	uint32_t cmdIndex;
+	if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 2, &cmdIndex))
+	{
+		ConsoleSendLine("Please supply a command");
+		return COMMAND_PARAMETER_ERROR;
+	}
+
+	taskItem_t *task;
+	int16_t colour;
+	int16_t minmax;
+	task = taskGet(taskId);
+
+	switch (buffer[cmdIndex])
+	{
+	case 'n':
+			// Get the task Name
+			ConsoleReceiveParamString(buffer, 3, name,TASK_NAME_LENGHTH_MAX );
+			// Check Length
+			if (strlen(name)< TASK_NAME_LENGHTH_MIN)
+			{
+				ConsoleSendLine("Name too short");
+				return COMMAND_PARAMETER_ERROR;
+			}
+			strcpy(task->name,name);
+			break;
+	case 'c':
+			// get the colour number
+
+			ConsoleReceiveParamInt16(buffer, 3, &colour);
+			if (colour > FACE_COUNT)
+			{
+				ConsoleSendLine("Invalid Colour");
+				return COMMAND_PARAMETER_ERROR;
+			}
+			task->colour = ledColours.colour[colour].code;
+			ConsoleSendString("Colour set : ");
+			ConsoleSendLine(ledColours.colour[colour].name);
+
+		break;
+	case 'm':
+			ConsoleReceiveParamInt16(buffer, 3, &minmax);
+			if (minmax <0)
+			{
+				ConsoleSendLine("Invalid Max time");
+				return COMMAND_PARAMETER_ERROR;
+			}
+			task->defaultMaxTime = minmax;
+		break;
+	case 'i':
+			ConsoleReceiveParamInt16(buffer, 3, &minmax);
+			if (minmax <0)
+			{
+				ConsoleSendLine("Invalid Min time");
+				return COMMAND_PARAMETER_ERROR;
+			}
+			task->defaultMinTime = minmax;
+		break;
+	}
+
+
 	// Show the current face info
 	displayTask(taskId);
-	ConsoleSendLine("Edit:\n\t1. Set Name\n\t2. Set Colour\n\t3. Set Task");
-
-
-
-
 	return COMMAND_SUCCESS;
 }
 static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
@@ -125,7 +334,7 @@ static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
 		int16_t taskId;
 		ConsoleReceiveParamInt16(buffer, 1, &taskId );
 
-		if (taskId < 0 || taskId > FACE_COUNT-1)
+		if (taskId < 0 || taskId > TASK_COUNT_MAX-1)
 		{
 			ConsoleSendLine("Invalid Task number");
 			return COMMAND_PARAMETER_ERROR;
@@ -141,13 +350,12 @@ static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 {
 	IGNORE_UNUSED_VARIABLE(buffer);
-	MPU6050_t data;
+
 	uint8_t face;
 	char msg[30];
-	for (uint8_t cnt=0;cnt<20;cnt++)
-	{
-		MPU6050_Read_All(&I2C_MPU6050, &data);
-	}
+
+	MPU6050_t data;
+	MPU6050ReadStable(&data);
 
 
 	sprintf(msg,"Angle X: %f Y: %f",data.KalmanAngleX, data.KalmanAngleY);

@@ -85,7 +85,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -113,17 +113,18 @@ int main(void)
   sysConfigInit();
   systemConfig_t * config = systemConfigGet();
   taskItems_t * taskItems = &config->configItems.tasksConfig;
+  dodecaItems_t *dodecaItems = &config->configItems.dodecaConfig;
   taskInit(taskItems);
+  dodecaInit(dodecaItems);
 
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP);
+/*  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPERR);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_WRPERR);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGAERR);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGPERR);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGSERR);
-
-  //if (SYS_CONFIG_BAD_DATA == sysConfigRead())
-	  sysConfigRead();
+*/
+  if (SYS_CONFIG_BAD_DATA == sysConfigRead())
   {
 	  taskSetDefaultAll();
 	  sysConfigSave();
@@ -135,6 +136,7 @@ int main(void)
 
   ConsoleInit();
   ConsoleSendString("Console Initialised\n");
+  HAL_Delay(100);
   if (MPU6050_Init(&hi2c1) == 1)
   {
 	  ConsoleSendString("** ERROR Initialising MNP6050!\n");

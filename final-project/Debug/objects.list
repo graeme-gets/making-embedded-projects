@@ -2,7 +2,7 @@
 "./Core/Cli/Src/console.o"
 "./Core/Cli/Src/consoleCommands.o"
 "./Core/Cli/Src/consoleIo.o"
-"./Core/Dodeca/Doceca.o"
+"./Core/Dodeca/doceca.o"
 "./Core/EE/FLASH_SECTOR_F4.o"
 "./Core/GY521/Src/gy521.o"
 "./Core/GY521/Src/mpu6050.o"

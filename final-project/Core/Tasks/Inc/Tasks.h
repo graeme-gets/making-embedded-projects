@@ -11,7 +11,7 @@
 #include "main.h"
 
 #define TASK_NAME_LENGHTH_MAX 30
-#define TASK_NAME_LENGHTH_MIN 30
+#define TASK_NAME_LENGHTH_MIN 3
 #define TASK_COUNT_MAX 20
 
 #define TASK_DEFAULT_MIN_TIME 0xaa
@@ -49,7 +49,7 @@ eTaskError_t taskSetDefaultMaxTime(uint8_t id, uint16_t maxTime);
 eTaskError_t taskSetDefaultMinTime(uint8_t id, uint16_t minTime);
 eTaskError_t taskNameSet(uint8_t id,char* name);
 eTaskError_t taskValidateTaskId(uint8_t id);
-taskItem_t * taskGet(uint8_t id );
+taskItem_t *  taskGet(uint8_t id );
 eTaskError_t taskSetDefault(uint8_t id);
 eTaskError_t taskSetDefaultAll();
 

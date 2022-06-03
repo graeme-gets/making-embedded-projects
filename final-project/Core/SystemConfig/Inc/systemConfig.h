@@ -8,7 +8,7 @@
 #ifndef CONFIG_INC_CONFIG_H_
 #define CONFIG_INC_CONFIG_H_
 
-#include <Dodeca.h>
+#include <dodeca.h>
 #include "stm32f4xx.h"
 #include "Tasks.h"
 #define FACE_COUNT 12

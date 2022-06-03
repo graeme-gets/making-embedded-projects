@@ -27,6 +27,7 @@
 #define NOT_FOUND		-1
 #define INT16_MAX_STR_LENGTH 8 // -65534: six characters plus a two NULLs
 #define INT32_MAX_STR_LENGTH 16
+#define STRING_MAX_LENGTH 30
 #define NULL_CHAR            '\0'
 #define CR_CHAR              '\r'
 #define LF_CHAR              '\n'
@@ -131,6 +132,7 @@ void ConsoleProcess(void)
 					{
 						ConsoleIoSendString("Error: ");
 						ConsoleIoSendString((char*)mReceiveBuffer);
+						ConsoleIoSendString(STR_ENDLINE);
 
 						ConsoleIoSendString("Help: ");
 						ConsoleIoSendString(commandTable[cmdIndex].help);
@@ -186,6 +188,30 @@ eCommandResult_T ConsoleParamFindN(const char * buffer, const uint8_t parameterN
 		*startLocation = bufferIndex;
 	}
 	return result;
+}
+
+// Assume the string is the last parameter and the the end is a null
+eCommandResult_T ConsoleReceiveParamString(const char * buffer, const uint8_t parameterNumber, char* string, uint32_t maxLen)
+{
+	uint32_t startIndex = 0;
+	eCommandResult_T result;
+	result = ConsoleParamFindN(buffer, parameterNumber, &startIndex);
+
+	if (result != COMMAND_SUCCESS)
+		return result;
+
+
+
+	// Check the length of the string
+	if (strlen(&buffer[startIndex]) > maxLen)
+	{
+		return COMMAND_ERROR;
+	}
+
+	// set the end of the string to a NULL for string termination
+	strcpy(string,&buffer[startIndex]);
+
+	return COMMAND_SUCCESS;
 }
 
 // ConsoleReceiveParamInt16

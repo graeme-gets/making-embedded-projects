@@ -69,6 +69,10 @@ Kalman_t KalmanY = {
         .R_measure = 0.03f,
 };
 
+
+
+
+
 uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx) {
     uint8_t check;
     uint8_t Data;
@@ -170,6 +174,15 @@ void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
 
     temp = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
     DataStruct->Temperature = (float) ((int16_t) temp / (float) 340.0 + (float) 36.53);
+}
+
+
+void MPU6050ReadStable(MPU6050_t *data)
+{
+	for (uint8_t cnt=0;cnt<20;cnt++)
+		{
+			MPU6050_Read_All(&I2C_MPU6050, data);
+		}
 }
 
 void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {

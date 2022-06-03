@@ -37,7 +37,7 @@ faceTable_t faceTable[12] = {
 };
 
 
-uint8_t detectFace(double x, double y)
+int8_t detectFace(double x, double y)
 {
 	uint8_t face;
 	for (face=0; face<FACE_COUNT; face++)
@@ -47,3 +47,6 @@ uint8_t detectFace(double x, double y)
 	}
 	return -1;
 }
+
+
+

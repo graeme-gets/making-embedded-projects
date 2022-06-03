@@ -36,10 +36,10 @@ eTaskError_t taskSetDefaultAll()
 
 eTaskError_t taskSetDefault(uint8_t id)
 {
-	if (TASK_INVALID_ID == taskValidateTaskId(id))
-		return TASK_INVALID_ID;
+	if (TASK_INVALID_ID == taskValidateTaskId(id)) return TASK_INVALID_ID;
 
 	taskItem_t *item = taskGet(id);
+
 
 	item->id = id;
 	item->colour = 0;
@@ -52,18 +52,21 @@ eTaskError_t taskSetDefault(uint8_t id)
 
 eTaskError_t taskSetDefaultMinTime(uint8_t id, uint16_t minTime)
 {
-	if (TASK_INVALID_ID == taskValidateTaskId(id))
-			return TASK_INVALID_ID;
+	if (TASK_INVALID_ID == taskValidateTaskId(id)) return TASK_INVALID_ID;
+
 	taskItem_t *item = taskGet(id);
+
 	item->defaultMinTime = minTime;
 	return TASK_OK;
 }
 
 eTaskError_t taskSetDefaultMaxTime(uint8_t id, uint16_t maxTime)
 {
-	if (TASK_INVALID_ID == taskValidateTaskId(id))
-			return TASK_INVALID_ID;
-	taskItem_t *item = taskGet(id);
+
+	if (TASK_INVALID_ID == taskValidateTaskId(id)) return TASK_INVALID_ID;
+
+	taskItem_t *item =  taskGet(id);
+
 	item->defaultMaxTime = maxTime;
 	return TASK_OK;
 }
@@ -83,16 +86,18 @@ eTaskError_t taskNameSet(uint8_t id,char* name)
 
 	taskItem_t *item = taskGet(id);
 
+
 	strcpy(item->name,name);
 	return TASK_OK;
 }
 
-taskItem_t * taskGet(uint8_t id )
+taskItem_t *  taskGet(uint8_t id )
 {
 	if (TASK_INVALID_ID == taskValidateTaskId(id))
 		return 0x0;
 
-	return &taskItemsPtr->items[id];
+	return  &taskItemsPtr->items[id];
+
 
 }
 

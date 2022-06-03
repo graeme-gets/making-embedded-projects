@@ -7,6 +7,43 @@
 
 #include "ledController.h"
 #include "ws2812.h"
+#include "string.h"
+
+
+ledColours_t ledColours = {
+		{
+			{"RED", 0xFA3232},
+			{"BLUE",0x3232FA},
+			{"GREEN",0x32FA32},
+			{"PURPLE",0x9932CC},
+			{"ORANGE",0xFA9632},
+			{"YELLOW",0xFAC800},
+
+			{"BROWN", 0x643232},
+			{"TEAL",0x32C896},
+			{"PEACH",0xFA9664},
+
+			{"WHITE",0xFAFAFA},
+			{"SKY",0x3296c8},
+			{"BTICK",0x640032}
+		}
+};
+
+
+void ledFindColour(uint32_t code, char* name)
+{
+
+	for (uint8_t i = 0 ;i<PIXEL_RINGS;i++)
+	{
+		if (code == ledColours.colour[i].code)
+		{
+			strcpy(name,ledColours.colour[i].name);
+			return;
+		}
+	}
+	strcpy(name,(char*)"Undefined");
+}
+
 
 void ledAllOff()
 {
