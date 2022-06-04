@@ -12,8 +12,26 @@ The device being used for this exercise is the Final Project Dodeca Timer.
  1. Estimated values will be used as the project has not got to the stage of reducing power at time of writing. 
  2. As 'off the shelf' breakout/dev boards have been used, they all have their own LDO's which would not be the case in a production unit. 
 
+**Software**
+Most of the peripherals on the processor will not be used and can be switched off. 
+The clock can be lowered as this appears to have the largest impact on consumption. 
+The two main areas where clock speed are critical  is the LED driver which needs to be run at an accurate 800Khz and the Serial communication. 
+The RTC will need to run off the external crystal in order to maintain accurate time.
 
-Hardware
+Looking at the hardware specifications, the device can run in two of the 4 low power modes.
+1. Run mode for when the device is awake
+2. sleep mode for then the device is idle and waiting a change of state
+
+Min Clock Speed to cater for LED and Comms 
+
+1. Serial Comms - A baud rate of 115200 can be achived with a low clock speed from 8Mhz. the minimum the device will run would be the internal oscillator which is 16Mhz. Accouding the the STMN32F411 family documentation, a 115200 baud rate at 16Mhz can be achieved with 0.08% error rate which is well within operational parameters.
+2. LED driver at 800Khz - for accurate only teh external crystal should be used which is at a 25Khz for the Blackpill dev board. It snot possible to achieve an exact 800Kkz frequency with whole numbers, so PLL could to be used to bring the system clock to a 800Khz. Thought some calculation with the clock settings could achieve the same result at a lower clock. 
+
+The device will only need to be run in 'Run Mode' while obtaining the orientation and setting, LED Face and logging events. Or during configuration. 
+
+This allows the device to be run in sleep mode for 90% of the time. With some hardware design changes, the device could run in STOP mode. 
+
+**Hardware**
 
 When choosing hardware, each chip or module will (or should) have a datasheet specifying the electrical characteristics. Within these characteristics there will be a list of the power consumption (usually in mA) along with possible power modes. 
 
@@ -112,6 +130,8 @@ The clock could also be reduced in both Run Mode and sleep to conserve power. In
 
 In Run Mode the clock could ber reduced to a speed that would still allow the Addressable LED's to be driven at 800Khz and the baud rate for the Serial connection at a minimum of 9600. 
 
-## Spradsheet calculations##
+## Spreadsheet calculations##
 
-Please refer to spreadsheet ![Power Calculations](/week-ten/PowerUsage.xlsx)
+Please refer to spreadsheet 
+![Power Calculations](/week-ten/PowerUsage.xlsx)
+
