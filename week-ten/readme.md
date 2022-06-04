@@ -30,21 +30,20 @@ The device will only need to be run in 'Run Mode' while obtaining the orientatio
 
 This allows the device to be run in sleep mode for 90% of the time. With some hardware design changes, the device could run in STOP mode. 
 
-**Peripherals**
+**Peripherals**  
 Most of the peripherals on the processor will not be used and can be switched off. This is done by disabling any unused peripherals and enuring that pins a re tied low.
 
-**Clock Busses**
+**Clock Busses**  
 Not all clock buses are used and can be disabled. 
 
 **Clock**
 The clock can be lowered as this appears to have the largest impact on consumption.
 
-**Gyro and RTC Interrupts**
+**Gyro and RTC Interrupts**  
 The Gyro and RTC Interrupts can be used to wake the device up from sleep. With a full custom hardware design, the device could be put into Stop Mode and upon awaking, the time and date could be retrieved from an external source. The current prototype depends on teh RTC keeping its own time. 
 
 
-**Hardware**
-
+**Hardware**  
 When choosing hardware, each chip or module will (or should) have a datasheet specifying the electrical characteristics. Within these characteristics there will be a list of the power consumption (usually in mA) along with possible power modes. 
 
 The Dodeca Timer has the following devices. 
