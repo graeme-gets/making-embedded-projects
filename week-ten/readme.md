@@ -6,6 +6,11 @@ While much can be done in hardware selection and design, a vast amount can be an
 
 The device being used for this exercise is the Final Project Dodeca Timer.
 
+## Spreadsheet calculations##
+
+Please refer to spreadsheet 
+![Power Calculations](/week-ten/PowerUsage.xlsx)
+
 ### Reducing Power
 
 **Notes**
@@ -141,8 +146,5 @@ The clock could also be reduced in both Run Mode and sleep to conserve power. In
 
 In Run Mode the clock could ber reduced to a speed that would still allow the Addressable LED's to be driven at 800Khz and the baud rate for the Serial connection at a minimum of 9600. 
 
-## Spreadsheet calculations##
 
-Please refer to spreadsheet 
-![Power Calculations](/week-ten/PowerUsage.xlsx)
 
