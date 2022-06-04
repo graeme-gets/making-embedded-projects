@@ -13,9 +13,7 @@ The device being used for this exercise is the Final Project Dodeca Timer.
  2. As 'off the shelf' breakout/dev boards have been used, they all have their own LDO's which would not be the case in a production unit. 
 
 **Software**
-
-Most of the peripherals on the processor will not be used and can be switched off. 
-The clock can be lowered as this appears to have the largest impact on consumption. 
+ 
 The two main areas where clock speed are critical  is the LED driver which needs to be run at an accurate 800Khz and the Serial communication. 
 The RTC will need to run off the external crystal in order to maintain accurate time.
 
@@ -31,6 +29,19 @@ Min Clock Speed to cater for LED and Comms
 The device will only need to be run in 'Run Mode' while obtaining the orientation and setting, LED Face and logging events. Or during configuration. 
 
 This allows the device to be run in sleep mode for 90% of the time. With some hardware design changes, the device could run in STOP mode. 
+
+**Peripherals**
+Most of the peripherals on the processor will not be used and can be switched off. This is done by disabling any unused peripherals and enuring that pins a re tied low.
+
+**Clock Busses**
+Not all clock buses are used and can be disabled. 
+
+**Clock**
+The clock can be lowered as this appears to have the largest impact on consumption.
+
+**Gyro and RTC Interrupts**
+The Gyro and RTC Interrupts can be used to wake the device up from sleep. With a full custom hardware design, the device could be put into Stop Mode and upon awaking, the time and date could be retrieved from an external source. The current prototype depends on teh RTC keeping its own time. 
+
 
 **Hardware**
 
