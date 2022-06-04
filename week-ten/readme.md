@@ -6,7 +6,7 @@ While much can be done in hardware selection and design, a vast amount can be an
 
 The device being used for this exercise is the Final Project Dodeca Timer.
 
-## Spreadsheet calculations##
+## Spreadsheet calculations
 
 Please refer to spreadsheet 
 ![Power Calculations](/week-ten/PowerUsage.xlsx)
