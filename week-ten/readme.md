@@ -36,7 +36,7 @@ Most of the peripherals on the processor will not be used and can be switched of
 **Clock Busses**  
 Not all clock buses are used and can be disabled. 
 
-**Clock**
+**Clock**  
 The clock can be lowered as this appears to have the largest impact on consumption.
 
 **Gyro and RTC Interrupts**  
