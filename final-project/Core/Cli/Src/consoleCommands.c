@@ -31,7 +31,6 @@
 //ToDo: Make this configurable
 //TODO: Make module for RTC control
 extern RTC_HandleTypeDef hrtc;
-extern ledColours_t ledColours;
 
 uint8_t uninitGlobalVar;
 uint8_t initGlobalVar = 'A';
@@ -93,10 +92,10 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 static void displayTask(uint8_t id)
 {
 	char msg[120];
-	char colourName[10];
 	taskItem_t *task = taskGet(id);
-	ledFindColour(task->colour,colourName);
-	sprintf(msg,"Task: %d - %s\n\tColour: %s %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,colourName,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
+	colour_t *colour = colourFindByCode(task->colour);
+
+	sprintf(msg,"Task: %d - %s\n\tColour: %s %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,colour->name,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
 	ConsoleSendLine(msg);
 }
 
@@ -287,9 +286,9 @@ static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
 				ConsoleSendLine("Invalid Colour");
 				return COMMAND_PARAMETER_ERROR;
 			}
-			task->colour = ledColours.colour[colour].code;
+//			task->colour = ledColours.colour[colour].code;
 			ConsoleSendString("Colour set : ");
-			ConsoleSendLine(ledColours.colour[colour].name);
+//			ConsoleSendLine(ledColours.colour[colour].name);
 
 		break;
 	case 'm':

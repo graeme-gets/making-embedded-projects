@@ -22,6 +22,7 @@ RM := rm -rf
 -include Core/GY521/Src/subdir.mk
 -include Core/EE/subdir.mk
 -include Core/Dodeca/subdir.mk
+-include Core/Colours/subdir.mk
 -include Core/Cli/Src/subdir.mk
 -include Core/CBuffer/Src/subdir.mk
 -include objects.mk

@@ -83,8 +83,8 @@ void sysConfigSave()
 {
 	uint32_t crc = sysConfigCalcChecksum();
 	systemConfig.checksum = crc;
-	uint32_t result;
-	result = Flash_Write_Data(SYSTEM_CONFIG_ADDRESS, (uint32_t *)&systemConfig, SYS_CONFIG_ALL_SIZE);
+
+	Flash_Write_Data(SYSTEM_CONFIG_ADDRESS, (uint32_t *)&systemConfig, SYS_CONFIG_ALL_SIZE);
 	//TODO: Handle a Confug Save Error - Hard Fault!
 }
 

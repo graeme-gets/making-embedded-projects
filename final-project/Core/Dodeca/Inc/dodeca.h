@@ -9,8 +9,9 @@
 #define DODECA_INC_DODECA_H_
 
 #include "Tasks.h"
-
+#include "colours.h"
 #define DODECA_COUNT_MAX 12
+#define DODECA_NAME_MAX  20
 
 typedef enum
 {
@@ -30,6 +31,8 @@ typedef enum
 typedef struct
 {
 	uint8_t taskId;
+	char name[DODECA_NAME_MAX];
+	uint32_t colour;
 	uint8_t minTimeMins;
 	uint8_t maxTimeMins;
 	eDodecaState_t state;
@@ -39,6 +42,10 @@ typedef struct
 {
 	dodecaItem_t items[DODECA_COUNT_MAX];
 }dodecaItems_t;
+
+
+
+
 
 
 eDodecaErr_t dodecaInit(dodecaItems_t * items);

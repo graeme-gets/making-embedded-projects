@@ -23,6 +23,7 @@ C_DEPS :=
 SUBDIRS := \
 Core/CBuffer/Src \
 Core/Cli/Src \
+Core/Colours \
 Core/Dodeca \
 Core/EE \
 Core/GY521/Src \
