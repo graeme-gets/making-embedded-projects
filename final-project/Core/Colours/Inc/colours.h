@@ -10,6 +10,7 @@
 #include <stm32f4xx.h>
 
 #define COLOUR_COUNT_MAX 12
+#define COLOUR_NAME_MAX 15
 
 #define COLOUR_RED_ID  	0
 #define COLOUR_BLUE_ID		1
@@ -26,7 +27,7 @@
 
 typedef struct
 {
-	char name[10];
+	char name[COLOUR_NAME_MAX];
 	uint32_t code;
 
 }colour_t;
@@ -34,5 +35,6 @@ typedef struct
 
 colour_t * colourFindByCode(const uint32_t code);
 colour_t * colourFindByName(const char * name );
+colour_t *colourFindByid(const uint8_t id );
 
 #endif /* INC_COLOURS_H_ */

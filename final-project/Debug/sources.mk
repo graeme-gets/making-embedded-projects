@@ -33,8 +33,8 @@ Core/LedController/Src \
 Core/Orinentation/Src \
 Core/Src \
 Core/Startup \
+Core/StateContoller \
 Core/SystemConfig \
-Core/Tasks \
 Core/WS2812/Src \
 Drivers/STM32F4xx_HAL_Driver/Src \
 

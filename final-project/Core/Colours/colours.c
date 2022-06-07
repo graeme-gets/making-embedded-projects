@@ -54,3 +54,13 @@ colour_t *colourFindByName(const char * name )
 
 	return NULL;
 }
+
+colour_t *colourFindByid(const uint8_t id )
+{
+
+	if (id < COLOUR_COUNT_MAX)
+		return &colours[id];
+	else
+		return NULL;
+}
+

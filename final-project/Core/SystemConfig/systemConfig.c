@@ -31,7 +31,6 @@ systemConfig_t systemConfig= {};
 
 static uint16_t SYS_CONFIG_SIZE ;
 static uint16_t SYS_CONFIG_ALL_SIZE;
-static uint16_t SYS_CONFIG_SIZE_TASK;
 static uint16_t SYS_CONFIG_SIZE_DODEC;
 
 
@@ -40,7 +39,6 @@ void sysConfigInit()
 {
 	SYS_CONFIG_SIZE = sizeof(systemConfig.configItems)/4;
 	SYS_CONFIG_ALL_SIZE = sizeof(systemConfig)/4;
-	SYS_CONFIG_SIZE_TASK = sizeof(systemConfig.configItems.tasksConfig);
 	SYS_CONFIG_SIZE_DODEC = sizeof(systemConfig.configItems.dodecaConfig);
 }
 
@@ -76,7 +74,7 @@ eSYSConfig_t sysConfigRead()
 	if (SYS_CONFIG_BAD_CHECKSUM == sysConfigValidateConfig())
 		return SYS_CONFIG_BAD_DATA;
 	else
-		return TASK_OK;
+		return SYS_CONFIG_OK;
 }
 
 void sysConfigSave()

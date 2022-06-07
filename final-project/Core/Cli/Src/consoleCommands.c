@@ -25,7 +25,7 @@
 #include "ws2812.h"
 #include "spi.h"
 
-#include "Tasks.h"
+
 
 
 //ToDo: Make this configurable
@@ -53,33 +53,31 @@ static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
 static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[]);
-static eCommandResult_T ConsoleCommandTaskSet(const char buffer[]);
-static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[]);
 static eCommandResult_T ConsoleCommandDodecaQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[]);
+static eCommandResult_T ConsoleCommandReset(const char buffer[]);
 
 static void displayDodeca(uint8_t id);
-static void displayTask(uint8_t id);
+
 
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
 
     {"help", &ConsoleCommandHelp, HELP("Lists the commands available")},
+	{"Reset", &ConsoleCommandReset, HELP("Resets the Dodeca to factory settings")},
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
-	{"acc?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data [r n - Read n times]")},
+	{"acc?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data [r n - Read n times]\ng - Get Reg\nWrite Reg")},
 	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
 	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
 	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
 	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
 	{"faceup?", &ConsoleCommandFaceUpQuery, HELP("Detect Face Up")},
-	{"task?", &ConsoleCommandTaskQuery, HELP("Display Task(s), No Param = list all, param = list specific")},
-	{"task", &ConsoleCommandTaskSet, HELP("Update Task \n\t n- name\n\tm - max duration\n\ti-min duration")},
 	{"save", &ConsoleCommandSaveConfig, HELP("Saves the current config to Flash")},
 	{"dodeca?", &ConsoleCommandDodecaQuery, HELP("Displays Dodeca Task, No Param = list all, param = list specific")},
 	{"dodeca", &ConsoleCommandDodecaSet, HELP("Set Dodeca Task, t-set task, m-set Max, i-set min")},
@@ -89,28 +87,32 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 };
 
 
-static void displayTask(uint8_t id)
-{
-	char msg[120];
-	taskItem_t *task = taskGet(id);
-	colour_t *colour = colourFindByCode(task->colour);
 
-	sprintf(msg,"Task: %d - %s\n\tColour: %s %#08x\n\tDefault Min Time: %i\n\tDefault Max Time: %i\n",id,task->name,colour->name,(unsigned int)task->colour,task->defaultMinTime,task->defaultMaxTime);
-	ConsoleSendLine(msg);
-}
+
 
 static void displayDodeca(uint8_t id)
 {
 	char msg[120];
 	char statename[20];
+	colour_t *colour;
 	dodecaItem_t *dodeca = 0;
-	taskItem_t *task;
+
 	dodeca = dodecaGet(id);
-	task = taskGet(dodeca->taskId);
+
 
 	dodecaGetStateName(dodeca->state,statename);
-	sprintf(msg,"Dodeca: %i - %s\n\t \n\tState: %s\n\tMin Time: %d\n\tMax Time: %d",id,task->name,statename,dodeca->minTimeMins,dodeca->maxTimeMins);
+	colour = colourFindByCode(dodeca->colour);
+	sprintf(msg,"Dodeca: %i - %s\n\tState: %s\n\tColour: %s\n\tMin Time: %d\n\tMax Time: %d\n",id,dodeca->name,statename, colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
 	ConsoleSendLine(msg);
+}
+
+static eCommandResult_T ConsoleCommandReset(const char buffer[])
+{
+	ConsoleSendLine("Resetting Configuration to factory default");
+	dodecaReset();
+	sysConfigSave();
+	ConsoleSendLine("Done");
+	return COMMAND_SUCCESS;
 }
 
 static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
@@ -120,7 +122,6 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 	int16_t value;
 	MPU6050_t data;
 	dodecaItem_t *dodeca;
-	taskItem_t *task;
 	char msg[50];
 
 		// get the command
@@ -145,33 +146,37 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 
 		dodeca = dodecaGet(dodecaId);
 
+		char name[DODECA_NAME_MAX];
+		int16_t colourId;
+
 		switch (buffer[cmdIndex])
 		{
-		case 't' :
-				// Sets a task to the dodeca current facing up
-				if (DODECA_STATE_ACTIVE == dodeca->state)
-				{
-					ConsoleSendLine("Cannot change an Active Task");
-					return COMMAND_SUCCESS;
-				}
 
+		case 'n':
+					// Get the task Name
+					ConsoleReceiveParamString(buffer, 3, name,DODECA_NAME_MAX );
+					// Check Length
+					if (strlen(name)< DODECA_NAME_MAX)
+					{
+						ConsoleSendLine("Name too short");
+						return COMMAND_PARAMETER_ERROR;
+					}
+					strcpy(dodeca->name,name);
+					break;
+			case 'c':
+					// get the colour number
 
-				// Set the Task Id
-				if (COMMAND_SUCCESS != ConsoleReceiveParamInt16(buffer, 2, &value))
-				{
-					return COMMAND_PARAMETER_ERROR;
-				}
+					ConsoleReceiveParamInt16(buffer, 3, &colourId);
+					if (colourId > COLOUR_COUNT_MAX)
+					{
+						ConsoleSendLine("Invalid Colour");
+						return COMMAND_PARAMETER_ERROR;
+					}
 
-				if (value > TASK_COUNT_MAX)
-				{
-					ConsoleSendLine("Invalid Task Id");
-					return COMMAND_PARAMETER_ERROR;
-				}
+					dodeca->colour = colourFindByid(colourId)->code;
 
-				task = taskGet(value);
-
-				dodecaInitItem(dodecaId,task->defaultMinTime,task->defaultMaxTime,value);
-			break;
+					ConsoleSendString("Colour set : ");
+					ConsoleSendLine(colourFindByCode(colourId)->name);
 
 		case 'm':
 				ConsoleReceiveParamInt16(buffer, 2, &value);
@@ -233,7 +238,7 @@ static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[])
 	ConsoleSendLine("Config Saved!");
 	return COMMAND_SUCCESS;
 }
-
+/*
 static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
 {
 
@@ -345,7 +350,7 @@ static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
 	return COMMAND_SUCCESS;
 }
 
-
+*/
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 {
 	IGNORE_UNUSED_VARIABLE(buffer);
@@ -361,15 +366,26 @@ static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 	ConsoleSendLine(msg);
 
 	face = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+	if (face < FACE_COUNT)
+	{
+		sprintf(msg,"Detected face %i is up",face);
+		ConsoleSendLine(msg);
+		uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
+		ledAllOff();
+		ledSetFaceColour(face, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
+		ledRender();
 
-	uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
+	}
+	else
+	{
+		sprintf(msg,"** Face NOT detected %i",face);
+		ConsoleSendLine(msg);
+	}
 
-	ledAllOff();
-	ledSetFaceColour(face, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
-	ledRender();
 
-	sprintf(msg,"Detected face %i is up",face);
-	ConsoleSendLine(msg);
+
+
+
 
 	return COMMAND_SUCCESS;
 }
@@ -654,6 +670,9 @@ static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[])
 static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 {
 	int16_t n;
+	uint16_t reg;
+	uint16_t regData;
+	char binStr[9];
 	MPU6050_t data;
 	char msg[100];
 	uint32_t paramIndex;
@@ -693,16 +712,7 @@ static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 				sprintf(msg,"\nRAW Average :[X:%5f Y:%5f Z:5%f]\n",rawAveX,rawAveY,rawAveZ);
 				ConsoleSendLine(msg);
 				break;
-		case 'a':
-				ConsoleReceiveParamInt16(buffer, 2, &n);
-				for (uint8_t cnt = 0;cnt<n;cnt++)
-				{
-					MPU6050_Read_All(&I2C_MPU6050, &data);
-					sprintf(msg,"A:[X:%2f Y:%2f]",data.KalmanAngleX, data.KalmanAngleY);
-					ConsoleSendLine(msg);
 
-				}
-				break;
 		case 'k':
 				ConsoleSendLine("--* Kalman Angle *--");
 				for (uint8_t cnt = 0;cnt<50;cnt++)
@@ -711,8 +721,30 @@ static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 				}
 				sprintf(msg,"[X:%2f Y:%2f]\n",data.KalmanAngleX, data.KalmanAngleY);
 				ConsoleSendLine(msg);
-
 			break;
+		case 'g':
+			ConsoleReceiveParamHexUint16(buffer, 2, &reg);
+			regData =  MPU6050_ReadReg(&I2C_MPU6050,reg);
+			byteToBin(regData, binStr);
+			sprintf(msg,"Reg [0x%x] = %x, %s",reg,regData,binStr);
+			ConsoleSendLine(msg);
+		break;
+		case 'w':
+				if (COMMAND_SUCCESS != ConsoleReceiveParamHexUint16(buffer, 2, &reg))
+				{
+					ConsoleSendLine("Register missing");
+					return COMMAND_PARAMETER_ERROR;
+				};
+
+				if (COMMAND_SUCCESS != ConsoleReceiveParamHexUint16(buffer, 3, &regData))
+				{
+					ConsoleSendLine("Register Data missing");
+					return COMMAND_PARAMETER_ERROR;
+				};
+				MPU6050_WriteReg(&I2C_MPU6050,reg,regData );
+
+				ConsoleSendLine("done.");
+				break;
 	}
 
 	return COMMAND_SUCCESS;

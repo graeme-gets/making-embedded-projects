@@ -1,7 +1,10 @@
-../Core/GY521/Src/mpu6050.c:76:9:MPU6050_Init	40	static
-../Core/GY521/Src/mpu6050.c:111:6:MPU6050_Read_Accel	40	static
-../Core/GY521/Src/mpu6050.c:146:6:MPU6050_Read_Gyro	40	static
-../Core/GY521/Src/mpu6050.c:167:6:MPU6050_Read_Temp	40	static
-../Core/GY521/Src/mpu6050.c:180:6:MPU6050ReadStable	24	static
-../Core/GY521/Src/mpu6050.c:188:6:MPU6050_Read_All	112	static
-../Core/GY521/Src/mpu6050.c:252:8:Kalman_getAngle	104	static
+../Core/GY521/Src/mpu6050.c:99:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/GY521/Src/mpu6050.c:106:9:MPU6050_Init	40	static
+../Core/GY521/Src/mpu6050.c:162:6:MPU6050_Read_Accel	40	static
+../Core/GY521/Src/mpu6050.c:197:10:MPU6050_ReadReg	40	static
+../Core/GY521/Src/mpu6050.c:206:6:MPU6050_WriteReg	32	static
+../Core/GY521/Src/mpu6050.c:213:6:MPU6050_Read_Gyro	40	static
+../Core/GY521/Src/mpu6050.c:234:6:MPU6050_Read_Temp	40	static
+../Core/GY521/Src/mpu6050.c:247:6:MPU6050ReadStable	24	static
+../Core/GY521/Src/mpu6050.c:255:6:MPU6050_Read_All	112	static
+../Core/GY521/Src/mpu6050.c:319:8:Kalman_getAngle	104	static

@@ -62,4 +62,6 @@ void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
 
 double Kalman_getAngle(Kalman_t *Kalman, double newAngle, double newRate, double dt);
 void MPU6050ReadStable(MPU6050_t *data);
+uint8_t MPU6050_ReadReg(I2C_HandleTypeDef *I2Cx,uint16_t reg)  ;
+void  MPU6050_WriteReg(I2C_HandleTypeDef *I2Cx,uint16_t reg, uint8_t data);
 

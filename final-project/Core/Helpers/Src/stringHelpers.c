@@ -54,3 +54,20 @@ uint8_t isNumber(uint8_t *string)
 	}
 	return 1;
 }
+
+
+void byteToBin(uint8_t b, char*text)
+{
+	uint8_t pos;
+	for (uint8_t cnt = 0;cnt<8;cnt++)
+	{
+		pos = 7-cnt;
+		if (b & 1<< cnt)
+			text[pos] = '1';
+		else
+			text[pos] = '0';
+
+	}
+	text[8] = 0x0;
+}
+

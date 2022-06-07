@@ -1,2 +1,0 @@
-../Core/GY521/Src/gy521.c:20:9:gy521_ready	32	static
-../Core/GY521/Src/gy521.c:27:6:gy521_Read_Gyro	40	static

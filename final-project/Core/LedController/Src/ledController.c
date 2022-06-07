@@ -31,9 +31,9 @@ void ledRender()
 
 void ledSetFaceColour(uint8_t face, uint8_t red, uint8_t green, uint8_t blue)
 {
-	uint8_t offset = face * 12;
+	uint16_t offset = face * 12;
 
-	for (uint8_t i=offset;i<offset + PIXELS_PER_FACE;i++)
+	for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
 	{
 		led_set_RGB(i,red,green,blue);
 	}

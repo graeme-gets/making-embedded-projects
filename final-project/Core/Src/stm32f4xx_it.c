@@ -56,6 +56,8 @@
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_tim1_ch1;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim9;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
@@ -198,6 +200,35 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(ACCEL_INT_Pin);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM1 break interrupt and TIM9 global interrupt.
+  */
+void TIM1_BRK_TIM9_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 0 */
+
+  /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  HAL_TIM_IRQHandler(&htim9);
+  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
+
+  /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
+}
 
 /**
   * @brief This function handles USART1 global interrupt.

@@ -38,7 +38,8 @@
 #include "ledController.h"
 #include "orientation.h"
 #include "systemConfig.h"
-#include "Tasks.h"
+#include "StateController.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,14 +108,14 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI1_Init();
   MX_CRC_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
 
   ledAllOff();
   sysConfigInit();
   systemConfig_t * config = systemConfigGet();
-  taskItems_t * taskItems = &config->configItems.tasksConfig;
   dodecaItems_t *dodecaItems = &config->configItems.dodecaConfig;
-  taskInit(taskItems);
+
   dodecaInit(dodecaItems);
 
 /*  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP);
@@ -124,9 +125,16 @@ int main(void)
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGPERR);
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGSERR);
 */
+
+  ConsoleInit();
+  stateContollerInit(STATE_IDLE);
+
+  HAL_TIM_Base_Start_IT(&htim9);
+
   if (SYS_CONFIG_BAD_DATA == sysConfigRead())
   {
-	  taskSetDefaultAll();
+	  ConsoleSendLine("*** CONFIG INVALID ***\nResetting to default");
+	  dodecaReset();
 	  sysConfigSave();
   }
 
@@ -134,8 +142,7 @@ int main(void)
 
 
 
-  ConsoleInit();
-  ConsoleSendString("Console Initialised\n");
+
   HAL_Delay(100);
   if (MPU6050_Init(&hi2c1) == 1)
   {
@@ -146,7 +153,7 @@ int main(void)
 	  ConsoleSendString("MPU6050 Initialised\n");
   }
   ConsolePrintPrompt();
-  uint8_t lastFace = 255;
+//  uint8_t lastFace = 255;
 
   /* USER CODE END 2 */
 
@@ -155,8 +162,9 @@ int main(void)
   while (1)
   {
 	  ConsoleProcess();
+	  stateController();
 
-	  MPU6050_t data;
+/*	  MPU6050_t data;
 	uint8_t face;
 	char msg[30];
 	for (uint8_t cnt=0;cnt<20;cnt++)
@@ -187,7 +195,7 @@ int main(void)
 	}
 	 HAL_Delay(200);
 
-
+*/
 
     /* USER CODE END WHILE */
 

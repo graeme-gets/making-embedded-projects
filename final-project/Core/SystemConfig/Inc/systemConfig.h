@@ -10,7 +10,6 @@
 
 #include <dodeca.h>
 #include "stm32f4xx.h"
-#include "Tasks.h"
 #define FACE_COUNT 12
 
 
@@ -24,7 +23,6 @@ typedef enum{
 
 typedef struct
 {
-	taskItems_t tasksConfig;
 	dodecaItems_t dodecaConfig;
 }configItems_t;
 

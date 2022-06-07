@@ -10,6 +10,11 @@
 
 #define DEL  '003'
 #define BKSP  '\177'
+
+
+
+
 void manageBackSpace(char* string);
 uint8_t isNumber(uint8_t *string);
+void byteToBin(uint8_t b, char*text);
 #endif /* HELPERS_INC_STRINGHELPERS_H_ */

@@ -28,6 +28,10 @@
  * | along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * |
  * | Kalman filter algorithm used from https://github.com/TKJElectronics/KalmanFilter
+ * |
+ * | https://www.eluke.nl/2016/08/11/how-to-enable-motion-detection-interrupt-on-mpu6050/
+ * |
+ * | http://www.i2cdevlib.com/devices/mpu6050#registers
  * |---------------------------------------------------------------------------------
  */
 
@@ -45,6 +49,27 @@
 #define TEMP_OUT_H_REG 0x41
 #define GYRO_CONFIG_REG 0x1B
 #define GYRO_XOUT_H_REG 0x43
+#define SIG_PATH_RESET 0x68
+#define INT_PIN_CFG 0x37
+#define MOT_THR 0x1F
+#define MOT_DUR 0x20
+#define MOT_DETECT_CTRL 0x69
+#define INT_ENABLE 0x38
+#define MPU6050_REG_CONFIG 0x1A
+#define MPU6050_REG_FIFO_EN       0x23
+
+
+#define MPU6050_MOT_EN 1<< 6
+
+// INT_PIN_CFG
+#define MPU6050_INT_LEVEL 		1<<7
+#define MPU6050_INT_OPEN		1<<6
+#define MPU6050_LATCH_INT_EN	1<<5
+#define MPU6050_INT_RD_CLEAR	1<<4
+#define MPU6050_FSYNC_INT_LEVEL	1<<3
+#define MPU6050_FSYNC_INT_EN	1<<2
+#define MPU6050_I2C_BYPASS_EN	1<<1
+#define MPU6050_CLKOUT_EN		1<<0
 
 #define CAL_X 	-384
 #define CAL_Y 	-1393
@@ -71,40 +96,66 @@ Kalman_t KalmanY = {
 
 
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+
+}
 
 
-uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx) {
-    uint8_t check;
+
+uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
+{
     uint8_t Data;
 
     // check device ID WHO_AM_I
+	Data = 0x4F;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
+
+	// power management register 0X6B we should write all 0's to wake the sensor up
+	Data = 1;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
+	Data = 0;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
+
+	Data = 0;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MPU6050_REG_CONFIG, 1, &Data, 1, i2c_timeout);
+
+	Data = 0;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MPU6050_REG_FIFO_EN, 1, &Data, 1, i2c_timeout);
+
+	// Reset Signal Path
+	Data = 0x7; // Reset All
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SIG_PATH_RESET, 1, &Data, 1, i2c_timeout);
+
+	// Set the Interupt Pin
+	Data = 0;// MPU6050_INT_LEVEL; // Active Low
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, INT_PIN_CFG, 1, &Data, 1, i2c_timeout);
+
+	// Set accelerometer configuration in ACCEL_CONFIG Register
+	// XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0 -> � 2g
+	Data =0;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, ACCEL_CONFIG_REG, 1, &Data, 1, i2c_timeout);
+
+
+	// Set Motion Threshold
+	Data = 10;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_THR, 1, &Data, 1, i2c_timeout);
+
+	// Set Motion Duration
+	Data = 1; //milli seconds
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_DUR, 1, &Data, 1, i2c_timeout);
+
+	// Set Detection Decrement oand others
+	Data = 20; // Decrement = 3
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_DETECT_CTRL, 1, &Data, 1, i2c_timeout);
+
+	// Enable the Interrupt
+	Data = 1<<6; //MPU6050_MOT_EN;
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, INT_ENABLE,1, &Data, 1, i2c_timeout);
 
 
 
-    HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, WHO_AM_I_REG, 1, &check, 1, i2c_timeout);
-
-    if (check == 114)  // 0x68 will be returned by the sensor if everything goes well
-    {
-        // power management register 0X6B we should write all 0's to wake the sensor up
-        Data = 0;
-        HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
-
-        // Set DATA RATE of 1KHz by writing SMPLRT_DIV register
-        Data = 0x07;
-        HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
-
-        // Set accelerometer configuration in ACCEL_CONFIG Register
-        // XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0 -> � 2g
-        Data = 0x00;
-        HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, ACCEL_CONFIG_REG, 1, &Data, 1, i2c_timeout);
-
-        // Set Gyroscopic configuration in GYRO_CONFIG Register
-        // XG_ST=0,YG_ST=0,ZG_ST=0, FS_SEL=0 -> � 250 �/s
-        Data = 0x00;
-        HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, GYRO_CONFIG_REG, 1, &Data, 1, i2c_timeout);
-        return 0;
-    }
-    return 1;
+    return 0;
 }
 
 
@@ -139,6 +190,22 @@ void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
 	if (DataStruct->Ay < 0.09) DataStruct->Ay= 0;
 	if (DataStruct->Az < 0.09) DataStruct->Az = 0;
 
+
+}
+
+
+uint8_t  MPU6050_ReadReg(I2C_HandleTypeDef *I2Cx,uint16_t reg) // NOTE : Only for 1 Byte Reg at the moment
+{
+	uint8_t result;
+
+
+	HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, reg, 1, &result, 1, i2c_timeout);
+	return result;
+}
+
+void MPU6050_WriteReg(I2C_HandleTypeDef *I2Cx,uint16_t reg, uint8_t data) // NOTE : Only for 1 Byte Reg at the moment
+{
+	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, reg, 1, &data, 1, i2c_timeout);
 
 }
 
@@ -179,7 +246,7 @@ void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
 
 void MPU6050ReadStable(MPU6050_t *data)
 {
-	for (uint8_t cnt=0;cnt<20;cnt++)
+	for (uint8_t cnt=0;cnt<30;cnt++)
 		{
 			MPU6050_Read_All(&I2C_MPU6050, data);
 		}
