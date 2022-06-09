@@ -21,9 +21,11 @@
 #include "stringHelpers.h"
 #include "orientation.h"
 #include "ledController.h"
+#include "colours.h"
 #include "systemConfig.h"
 #include "ws2812.h"
 #include "spi.h"
+#include "StateController.h"
 
 
 
@@ -57,6 +59,9 @@ static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[]);
 static eCommandResult_T ConsoleCommandDodecaQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandReset(const char buffer[]);
+static eCommandResult_T ConsoleCommandReboot(const char buffer[]);
+static eCommandResult_T ConsoleCommandConfig(const char buffer[]);
+static eCommandResult_T ConsoleCommandExitConfig(const char buffer[]);
 
 static void displayDodeca(uint8_t id);
 
@@ -66,7 +71,8 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
 
     {"help", &ConsoleCommandHelp, HELP("Lists the commands available")},
-	{"Reset", &ConsoleCommandReset, HELP("Resets the Dodeca to factory settings")},
+	{"Reset!", &ConsoleCommandReset, HELP("Resets the Dodeca to factory settings")},
+	{"Reboot!", &ConsoleCommandReboot, HELP("Reboots the device")},
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
 	{"time?", &ConsoleCommandTimeQuery, HELP("Get the current time")},
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
@@ -81,6 +87,8 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"save", &ConsoleCommandSaveConfig, HELP("Saves the current config to Flash")},
 	{"dodeca?", &ConsoleCommandDodecaQuery, HELP("Displays Dodeca Task, No Param = list all, param = list specific")},
 	{"dodeca", &ConsoleCommandDodecaSet, HELP("Set Dodeca Task, t-set task, m-set Max, i-set min")},
+	{"config", &ConsoleCommandConfig, HELP("Enter Config Mode")},
+	{"exit", &ConsoleCommandExitConfig, HELP("Exit Config Mode")},
 
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
@@ -95,7 +103,7 @@ static void displayDodeca(uint8_t id)
 	char msg[120];
 	char statename[20];
 	colour_t *colour;
-	dodecaItem_t *dodeca = 0;
+	dodecaItem_t *dodeca;
 
 	dodeca = dodecaGet(id);
 
@@ -104,6 +112,23 @@ static void displayDodeca(uint8_t id)
 	colour = colourFindByCode(dodeca->colour);
 	sprintf(msg,"Dodeca: %i - %s\n\tState: %s\n\tColour: %s\n\tMin Time: %d\n\tMax Time: %d\n",id,dodeca->name,statename, colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
 	ConsoleSendLine(msg);
+}
+
+static eCommandResult_T ConsoleCommandConfig(const char buffer[])
+{
+	setStateControllerMode(STATE_CONT_MODE_CONFIG);
+	return COMMAND_SUCCESS;
+}
+static eCommandResult_T ConsoleCommandExitConfig(const char buffer[])
+{
+	setStateControllerMode(STATE_CONT_MODE_RUN);
+	return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommandReboot(const char buffer[])
+{
+	NVIC_SystemReset();
+	return COMMAND_SUCCESS;
 }
 
 static eCommandResult_T ConsoleCommandReset(const char buffer[])
@@ -120,8 +145,7 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 	// get the Dodeca Id to set
 	int16_t dodecaId;
 	int16_t value;
-	MPU6050_t data;
-	dodecaItem_t *dodeca;
+	dodecaItem_t *dodeca = 0x0;
 	char msg[50];
 
 		// get the command
@@ -132,8 +156,7 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 			return COMMAND_PARAMETER_ERROR;
 		}
 
-		MPU6050ReadStable(&data);
-		dodecaId = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+		dodecaId = detectFaceUp();
 
 
 		if (dodecaId< 0)
@@ -365,14 +388,14 @@ static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 	sprintf(msg,"Angle X: %f Y: %f",data.KalmanAngleX, data.KalmanAngleY);
 	ConsoleSendLine(msg);
 
-	face = detectFace(data.KalmanAngleX, data.KalmanAngleY);
+	face = detectFaceUp();
 	if (face < FACE_COUNT)
 	{
 		sprintf(msg,"Detected face %i is up",face);
 		ConsoleSendLine(msg);
 		uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
 		ledAllOff();
-		ledSetFaceColour(face, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
+		ledSetFaceColour(face, rgb_color,LED_FACE_MODE_NORMAL);
 		ledRender();
 
 	}
@@ -422,11 +445,11 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 			result = ConsoleParamFindN(buffer,3,&startIndex);
 			uint8_t colour = buffer[startIndex];
 			if ('r' == colour)
-				ledSetFaceColour(faceNumber,0xAA,00,0);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_RED_ID)->code,LED_FACE_MODE_NORMAL);
 			else if ('g' == colour)
-				ledSetFaceColour(faceNumber,0x0,0xAA,0);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_GREEN_ID)->code,LED_FACE_MODE_NORMAL);
 			else if ('b' == colour)
-				ledSetFaceColour(faceNumber,0x0,0x0,0xAA);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_BLUE_ID)->code,LED_FACE_MODE_NORMAL);
 
 			ledRender();
 

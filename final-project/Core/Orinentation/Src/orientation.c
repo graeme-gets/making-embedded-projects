@@ -17,35 +17,43 @@ typedef struct
 	int16_t yRBottom;
 } faceTable_t;
 
-
+#define FACE_NOT_FOUND 0xFF
 
 
 faceTable_t faceTable[12] = {
-		{	1,	-12	,	8	,	-11	,	9	},
-		{	2,	-11	,	9	,	61	,	81	},
-		{	3,	58	,	78	,	30	,	50	},
-		{	4,	23	,	43	,	-80	,	-60	},
-		{	5,	-45	,	-25	,	-80	,	-60	},
-		{	6,	-76	,	-56	,	33	,	53	},
-		{	7,	-62	,	-42	,	-163	,	-143},
-		{	8,	-40	,	-20	,	120	,	140	},
-		{	9,	18	,	38	,	121	,	141	},
-		{	10,	39	,	59	,	-162	,	-142	},
-		{	11,	-12	,	8	,	-133	,	-113	},
-		{	12,	-13	,	7	,	-188	,	-168}
+		{	0,	-12	,	8	,	-11	,	9		},
+		{	1,	-11	,	9	,	61	,	81		},
+		{	2,	58	,	78	,	30	,	50		},
+		{	3,	23	,	43	,	-80	,	-60		},
+		{	4,	-45	,	-25	,	-80	,	-60		},
+		{	5,	-76	,	-56	,	33	,	53		},
+		{	6,	-62	,	-42	,	-163,	-143	},
+		{	7,	-40	,	-20	,	120	,	140		},
+		{	8,	18	,	38	,	121	,	141		},
+		{	9,	39	,	59	,	-162,	-142	},
+		{	10,	-12	,	8	,	-133,	-113	},
+		{	11,	-13	,	7	,	-188,	-168	}
 
 };
 
 
-int8_t detectFace(double x, double y)
+
+
+int8_t detectFaceUp()
 {
+	MPU6050_t imuData;
+
+	MPU6050ReadStable(&imuData);
+	double x = imuData.KalmanAngleX;
+	double y = imuData.KalmanAngleY;
+
 	uint8_t face;
 	for (face=0; face<FACE_COUNT; face++)
 	{
 		if ( x > faceTable[face].xRTop && x < faceTable[face].xRBottom && y > faceTable[face].yRTop && y < faceTable[face].yRBottom )
-			return face;
+			return faceTable[face].faceId;
 	}
-	return -1;
+	return FACE_NOT_FOUND;
 }
 
 

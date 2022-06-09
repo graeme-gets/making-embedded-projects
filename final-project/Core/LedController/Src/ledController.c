@@ -8,6 +8,7 @@
 #include "ledController.h"
 #include "ws2812.h"
 #include "string.h"
+#include "colours.h"
 
 
 
@@ -21,21 +22,35 @@ void ledAllOff()
 	{
 		led_set_RGB(i,0x0,0,0);
 	}
-
 }
+
 
 void ledRender()
 {
 	led_render();
 }
 
-void ledSetFaceColour(uint8_t face, uint8_t red, uint8_t green, uint8_t blue)
+void ledSetFaceColour(uint8_t face, uint32_t colour,eLedFaceMode_t mode)
 {
 	uint16_t offset = face * 12;
 
-	for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
+	if (mode == LED_FACE_MODE_ERROR)
 	{
-		led_set_RGB(i,red,green,blue);
+		uint32_t errorColour = colourFindByid(COLOUR_ERROR_ID)->code;
+		for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
+		{
+			if ((i+1)%2)
+				led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
+			else
+				led_set_RGB(i,(errorColour >> 16) & 0xFF, (errorColour >> 8) & 0xFF, errorColour & 0xFF);
+		}
+	}
+	else
+	{
+		for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
+		{
+			led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
+		}
 	}
 
 }

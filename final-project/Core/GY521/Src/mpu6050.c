@@ -59,6 +59,7 @@
 #define MPU6050_REG_FIFO_EN       0x23
 
 
+
 #define MPU6050_MOT_EN 1<< 6
 
 // INT_PIN_CFG
@@ -106,56 +107,38 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
 {
     uint8_t Data;
+    uint8_t check;
 
-    // check device ID WHO_AM_I
-	Data = 0x4F;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
-
-	// power management register 0X6B we should write all 0's to wake the sensor up
-	Data = 1;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
-	Data = 0;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
-
-	Data = 0;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MPU6050_REG_CONFIG, 1, &Data, 1, i2c_timeout);
-
-	Data = 0;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MPU6050_REG_FIFO_EN, 1, &Data, 1, i2c_timeout);
-
-	// Reset Signal Path
-	Data = 0x7; // Reset All
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SIG_PATH_RESET, 1, &Data, 1, i2c_timeout);
-
-	// Set the Interupt Pin
-	Data = 0;// MPU6050_INT_LEVEL; // Active Low
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, INT_PIN_CFG, 1, &Data, 1, i2c_timeout);
-
-	// Set accelerometer configuration in ACCEL_CONFIG Register
-	// XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0 -> � 2g
-	Data =0;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, ACCEL_CONFIG_REG, 1, &Data, 1, i2c_timeout);
+    // power management register 0X6B we should write all 0's to wake the sensor up
 
 
-	// Set Motion Threshold
-	Data = 10;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_THR, 1, &Data, 1, i2c_timeout);
-
-	// Set Motion Duration
-	Data = 1; //milli seconds
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_DUR, 1, &Data, 1, i2c_timeout);
-
-	// Set Detection Decrement oand others
-	Data = 20; // Decrement = 3
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, MOT_DETECT_CTRL, 1, &Data, 1, i2c_timeout);
-
-	// Enable the Interrupt
-	Data = 1<<6; //MPU6050_MOT_EN;
-	HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, INT_ENABLE,1, &Data, 1, i2c_timeout);
+    HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, WHO_AM_I_REG, 1, &check, 1, i2c_timeout);
 
 
+       if (check == 114)  // 0x68 will be returned by the sensor if everything goes well
+       {
+           // power management register 0X6B we should write all 0's to wake the sensor up
+           Data = 0;
+           HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
 
-    return 0;
+           // Set DATA RATE of 1KHz by writing SMPLRT_DIV register
+           Data = 0x07;
+           HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
+
+           // Set accelerometer configuration in ACCEL_CONFIG Register
+           // XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0 -> � 2g
+           Data = 0x00;
+           HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, ACCEL_CONFIG_REG, 1, &Data, 1, i2c_timeout);
+
+           // Set Gyroscopic configuration in GYRO_CONFIG Register
+           // XG_ST=0,YG_ST=0,ZG_ST=0, FS_SEL=0 -> � 250 �/s
+           Data = 0x00;
+           HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, GYRO_CONFIG_REG, 1, &Data, 1, i2c_timeout);
+           return 0;
+       }
+
+
+    return 1;
 }
 
 
@@ -246,9 +229,11 @@ void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
 
 void MPU6050ReadStable(MPU6050_t *data)
 {
+	HAL_Delay(10);
 	for (uint8_t cnt=0;cnt<30;cnt++)
 		{
 			MPU6050_Read_All(&I2C_MPU6050, data);
+			HAL_Delay(5);
 		}
 }
 

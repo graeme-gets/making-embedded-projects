@@ -112,6 +112,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   ledAllOff();
+  ledRender();
   sysConfigInit();
   systemConfig_t * config = systemConfigGet();
   dodecaItems_t *dodecaItems = &config->configItems.dodecaConfig;
@@ -127,9 +128,7 @@ int main(void)
 */
 
   ConsoleInit();
-  stateContollerInit(STATE_IDLE);
 
-  HAL_TIM_Base_Start_IT(&htim9);
 
   if (SYS_CONFIG_BAD_DATA == sysConfigRead())
   {
@@ -140,20 +139,45 @@ int main(void)
 
 
 
-
-
-
   HAL_Delay(100);
-  if (MPU6050_Init(&hi2c1) == 1)
+  while(1 == MPU6050_Init(&hi2c1) )
   {
 	  ConsoleSendString("** ERROR Initialising MNP6050!\n");
+	  hi2c1.Instance->CR1 &= ~(I2C_CR1_PE);
+
+	  HAL_I2C_MspDeInit(&hi2c1);
+	  hi2c1.Instance->SR2 &=~(I2C_SR2_BUSY);
+
+	  GPIO_InitTypeDef GPIO_Init;
+	  GPIO_Init.Pin = GPIO_PIN_7;
+	  GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+	  GPIO_Init.Pull = GPIO_PULLUP;
+	  GPIO_Init.Speed = GPIO_SPEED_FREQ_LOW;
+	  HAL_GPIO_Init(GPIOB, &GPIO_Init);
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+	  HAL_Delay(50);
+	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+	  MX_I2C1_Init();
+
+	  //__HAL_RCC_GPIOB_CLK_ENABLE();
+	  HAL_Delay(100);
+
   }
-  else
-  {
-	  ConsoleSendString("MPU6050 Initialised\n");
-  }
+  // run the Accel To get initial angle ready. Seems to need to be run a numerb of times for the karman angle to settle???
+
+detectFaceUp();
+
+  ConsoleSendString("MPU6050 Initialised\n");
+
+  //HAL_TIM_Base_Start_IT(&htim9);
+
+  stateContollerInit(STATE_BEGIN);
+  ledAllOff();
+
+
   ConsolePrintPrompt();
-//  uint8_t lastFace = 255;
+/////////////////////////////  uint8_t lastFace = 255;
 
   /* USER CODE END 2 */
 
@@ -163,8 +187,8 @@ int main(void)
   {
 	  ConsoleProcess();
 	  stateController();
-
-/*	  MPU6050_t data;
+/*
+	  MPU6050_t data;
 	uint8_t face;
 	char msg[30];
 	for (uint8_t cnt=0;cnt<20;cnt++)
@@ -193,9 +217,10 @@ int main(void)
 		sprintf(msg,"Detected face %i is up",face);
 		ConsoleSendLine(msg);
 	}
+
+	*/
 	 HAL_Delay(200);
 
-*/
 
     /* USER CODE END WHILE */
 

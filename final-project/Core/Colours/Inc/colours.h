@@ -9,7 +9,7 @@
 #define INC_COLOURS_H_
 #include <stm32f4xx.h>
 
-#define COLOUR_COUNT_MAX 12
+#define COLOUR_COUNT_MAX 14
 #define COLOUR_NAME_MAX 15
 
 #define COLOUR_RED_ID  	0
@@ -24,9 +24,12 @@
 #define COLOUR_WHITE_ID	9
 #define COLOUR_SKY_ID		10
 #define COLOUR_BRICK_ID	11
+#define COLOUR_BLACK_ID 12
+#define COLOUR_ERROR_ID 13
 
 typedef struct
 {
+	uint8_t id;
 	char name[COLOUR_NAME_MAX];
 	uint32_t code;
 
