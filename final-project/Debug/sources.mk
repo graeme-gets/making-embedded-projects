@@ -24,6 +24,7 @@ SUBDIRS := \
 Core/CBuffer/Src \
 Core/Cli/Src \
 Core/Colours \
+Core/DataStore \
 Core/Dodeca \
 Core/EE \
 Core/GY521/Src \
@@ -31,6 +32,7 @@ Core/Helpers/Src \
 Core/LC709203F/Src \
 Core/LedController/Src \
 Core/Orinentation/Src \
+Core/RtcController \
 Core/Src \
 Core/Startup \
 Core/StateContoller \

@@ -26,6 +26,8 @@
 #include "ws2812.h"
 #include "spi.h"
 #include "StateController.h"
+#include "rtcController.h"
+#include "dataSt"
 
 
 
@@ -62,6 +64,8 @@ static eCommandResult_T ConsoleCommandReset(const char buffer[]);
 static eCommandResult_T ConsoleCommandReboot(const char buffer[]);
 static eCommandResult_T ConsoleCommandConfig(const char buffer[]);
 static eCommandResult_T ConsoleCommandExitConfig(const char buffer[]);
+static eCommandResult_T ConsoleCommandDumpData(const char buffer[]);
+static eCommandResult_T ConsoleCommandClearData(const char buffer[]);
 
 static void displayDodeca(uint8_t id);
 
@@ -89,6 +93,8 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"dodeca", &ConsoleCommandDodecaSet, HELP("Set Dodeca Task, t-set task, m-set Max, i-set min")},
 	{"config", &ConsoleCommandConfig, HELP("Enter Config Mode")},
 	{"exit", &ConsoleCommandExitConfig, HELP("Exit Config Mode")},
+	{"dump", &ConsoleCommandDumpData, HELP("Dump the Dodeca Records")},
+	{"clear", &ConsoleCommandClearData, HELP("Clear the data store")},
 
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
@@ -113,6 +119,18 @@ static void displayDodeca(uint8_t id)
 	sprintf(msg,"Dodeca: %i - %s\n\tState: %s\n\tColour: %s\n\tMin Time: %d\n\tMax Time: %d\n",id,dodeca->name,statename, colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
 	ConsoleSendLine(msg);
 }
+
+
+static eCommandResult_T ConsoleCommandDumpData(const char buffer[])
+{
+	uint8_t recordCount =
+}
+
+static eCommandResult_T ConsoleCommandClearData(const char buffer[])
+{
+
+}
+
 
 static eCommandResult_T ConsoleCommandConfig(const char buffer[])
 {
@@ -174,7 +192,12 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 
 		switch (buffer[cmdIndex])
 		{
-
+		case 'a':
+				dodeca->state = DODECA_STATE_STOPPED;
+			break;
+		case 'd':
+				dodeca->state = DODECA_STATE_NOT_CONFIGURED;
+			break;
 		case 'n':
 					// Get the task Name
 					ConsoleReceiveParamString(buffer, 3, name,DODECA_NAME_MAX );
@@ -186,7 +209,7 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 					}
 					strcpy(dodeca->name,name);
 					break;
-			case 'c':
+		case 'c':
 					// get the colour number
 
 					ConsoleReceiveParamInt16(buffer, 3, &colourId);
@@ -261,119 +284,7 @@ static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[])
 	ConsoleSendLine("Config Saved!");
 	return COMMAND_SUCCESS;
 }
-/*
-static eCommandResult_T ConsoleCommandTaskSet(const char buffer[])
-{
 
-	// get the task Id to set
-	int16_t taskId;
-	char name[TASK_NAME_LENGHTH_MAX];
-	if (COMMAND_SUCCESS != ConsoleReceiveParamInt16(buffer, 1, &taskId))
-	{
-		return COMMAND_PARAMETER_ERROR;
-	}
-
-	if (taskId > TASK_COUNT_MAX)
-	{
-		ConsoleSendLine("Invalid Task ID");
-		return COMMAND_PARAMETER_ERROR;
-	}
-
-	// get the command
-	uint32_t cmdIndex;
-	if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 2, &cmdIndex))
-	{
-		ConsoleSendLine("Please supply a command");
-		return COMMAND_PARAMETER_ERROR;
-	}
-
-	taskItem_t *task;
-	int16_t colour;
-	int16_t minmax;
-	task = taskGet(taskId);
-
-	switch (buffer[cmdIndex])
-	{
-	case 'n':
-			// Get the task Name
-			ConsoleReceiveParamString(buffer, 3, name,TASK_NAME_LENGHTH_MAX );
-			// Check Length
-			if (strlen(name)< TASK_NAME_LENGHTH_MIN)
-			{
-				ConsoleSendLine("Name too short");
-				return COMMAND_PARAMETER_ERROR;
-			}
-			strcpy(task->name,name);
-			break;
-	case 'c':
-			// get the colour number
-
-			ConsoleReceiveParamInt16(buffer, 3, &colour);
-			if (colour > FACE_COUNT)
-			{
-				ConsoleSendLine("Invalid Colour");
-				return COMMAND_PARAMETER_ERROR;
-			}
-//			task->colour = ledColours.colour[colour].code;
-			ConsoleSendString("Colour set : ");
-//			ConsoleSendLine(ledColours.colour[colour].name);
-
-		break;
-	case 'm':
-			ConsoleReceiveParamInt16(buffer, 3, &minmax);
-			if (minmax <0)
-			{
-				ConsoleSendLine("Invalid Max time");
-				return COMMAND_PARAMETER_ERROR;
-			}
-			task->defaultMaxTime = minmax;
-		break;
-	case 'i':
-			ConsoleReceiveParamInt16(buffer, 3, &minmax);
-			if (minmax <0)
-			{
-				ConsoleSendLine("Invalid Min time");
-				return COMMAND_PARAMETER_ERROR;
-			}
-			task->defaultMinTime = minmax;
-		break;
-	}
-
-
-	// Show the current face info
-	displayTask(taskId);
-	return COMMAND_SUCCESS;
-}
-static eCommandResult_T ConsoleCommandTaskQuery(const char buffer[])
-{
-	uint32_t param1;
-
-	if (COMMAND_SUCCESS != ConsoleParamFindN(buffer, 1, &param1))
-	{
-		// List all tasks
-		for (uint8_t f=0;f<TASK_COUNT_MAX;f++)
-		{
-			displayTask(f);
-		}
-	}
-	else
-	{
-		int16_t taskId;
-		ConsoleReceiveParamInt16(buffer, 1, &taskId );
-
-		if (taskId < 0 || taskId > TASK_COUNT_MAX-1)
-		{
-			ConsoleSendLine("Invalid Task number");
-			return COMMAND_PARAMETER_ERROR;
-		}
-
-		displayTask(taskId);
-
-	}
-	return COMMAND_SUCCESS;
-}
-
-*/
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 {
 	IGNORE_UNUSED_VARIABLE(buffer);
@@ -395,7 +306,7 @@ static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[])
 		ConsoleSendLine(msg);
 		uint32_t rgb_color = hsl_to_rgb((face*30), 255, 127);
 		ledAllOff();
-		ledSetFaceColour(face, rgb_color,LED_FACE_MODE_NORMAL);
+		ledSetFaceColour(face, rgb_color,0x0,LED_FACE_MODE_NORMAL);
 		ledRender();
 
 	}
@@ -445,11 +356,11 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 			result = ConsoleParamFindN(buffer,3,&startIndex);
 			uint8_t colour = buffer[startIndex];
 			if ('r' == colour)
-				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_RED_ID)->code,LED_FACE_MODE_NORMAL);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_RED_ID)->code,0x0,LED_FACE_MODE_NORMAL);
 			else if ('g' == colour)
-				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_GREEN_ID)->code,LED_FACE_MODE_NORMAL);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_GREEN_ID)->code,0x0,LED_FACE_MODE_NORMAL);
 			else if ('b' == colour)
-				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_BLUE_ID)->code,LED_FACE_MODE_NORMAL);
+				ledSetFaceColour(faceNumber,colourFindByid(COLOUR_BLUE_ID)->code,0x0,LED_FACE_MODE_NORMAL);
 
 			ledRender();
 
@@ -771,20 +682,14 @@ static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[])
 	}
 
 	return COMMAND_SUCCESS;
-
-
-
 }
 
 
 static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[])
 {
 	char time[30];
-	RTC_TimeTypeDef sTime;
-	RTC_DateTypeDef sDate;
-	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN); // There is a bug in HAL where the time is only returned if the date is also read (even after the fact!)
-	sprintf(time,"Time: %02d.%02d.%02d\r\n",sTime.Hours,sTime.Minutes,sTime.Seconds);
+	rtcGetTimeString(time);
+	ConsoleSendString("Time: ");
 	ConsoleSendString(time);
 	return COMMAND_SUCCESS;
 }
@@ -793,14 +698,11 @@ static eCommandResult_T ConsoleCommandTimeQuery(const char buffer[])
 static eCommandResult_T ConsoleCommandDateQuery(const char buffer[])
 {
 	char date[30];
-	RTC_DateTypeDef sDate;
-	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-	sprintf(date,"Date: %02d.%02d.%02d\t",sDate.Date,sDate.Month,sDate.Year);
+	ConsoleSendString("Date: ");
+	rtcGetDateString(date);
 	ConsoleSendString(date);
 	return COMMAND_SUCCESS;
 }
-
-
 
 
 static eCommandResult_T ConsoleCommandHelp(const char buffer[])

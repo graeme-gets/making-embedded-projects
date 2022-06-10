@@ -10,6 +10,7 @@
 
 
 #include "colours.h"
+#include "time.h"
 #define DODECA_COUNT_MAX 12
 #define DODECA_NAME_MAX  20
 #define DODECA_NAME_MIN  3
@@ -39,6 +40,7 @@ typedef struct
 	uint32_t colour;
 	uint8_t minTimeMins;
 	uint8_t maxTimeMins;
+	time_t start_time;
 	eDodecaState_t state;
 } dodecaItem_t;
 

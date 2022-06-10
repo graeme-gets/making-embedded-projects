@@ -28,30 +28,39 @@ void ledAllOff()
 void ledRender()
 {
 	led_render();
+	HAL_Delay(10);
 }
 
-void ledSetFaceColour(uint8_t face, uint32_t colour,eLedFaceMode_t mode)
+void ledSetFaceColour(uint8_t face, uint32_t colour, uint32_t colour2,eLedFaceMode_t mode)
 {
 	uint16_t offset = face * 12;
 
-	if (mode == LED_FACE_MODE_ERROR)
-	{
-		uint32_t errorColour = colourFindByid(COLOUR_ERROR_ID)->code;
+
+
 		for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
 		{
-			if ((i+1)%2)
+			if (mode == LED_FACE_MODE_ERROR)
+			{
+				uint32_t errorColour = colourFindByid(COLOUR_ERROR_ID)->code;
+				if ((i+1)%2)
+					led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
+				else
+					led_set_RGB(i,(errorColour >> 16) & 0xFF, (errorColour >> 8) & 0xFF, errorColour & 0xFF);
+			}
+			else if (mode == LED_FACE_MODE_NORMAL)
+			{
 				led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
-			else
-				led_set_RGB(i,(errorColour >> 16) & 0xFF, (errorColour >> 8) & 0xFF, errorColour & 0xFF);
-		}
+			}
+			else if (mode == LED_FACE_MODE_HALF)
+			{
+
+				if ((i+1)%2)
+					led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
+				else
+					led_set_RGB(i,(colour2 >> 16) & 0xFF, (colour2 >> 8) & 0xFF, colour2 & 0xFF);
+			}
 	}
-	else
-	{
-		for (uint16_t i=offset;i<offset + PIXELS_PER_FACE;i++)
-		{
-			led_set_RGB(i,(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
-		}
-	}
+
 
 }
 

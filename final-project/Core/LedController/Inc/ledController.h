@@ -18,6 +18,7 @@ typedef enum
 {
 	LED_FACE_MODE_NORMAL,
 	LED_FACE_MODE_ERROR,
+	LED_FACE_MODE_HALF
 }eLedFaceMode_t;
 
 
@@ -25,7 +26,7 @@ typedef enum
 
 
 void ledAllOff();
-void ledSetFaceColour(uint8_t face, uint32_t colour,eLedFaceMode_t mode);
+void ledSetFaceColour(uint8_t face, uint32_t colour, uint32_t colour2,eLedFaceMode_t mode);
 void ledDance();
 void ledRender();
 

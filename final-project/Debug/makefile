@@ -15,6 +15,7 @@ RM := rm -rf
 -include Core/StateContoller/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Core/RtcController/subdir.mk
 -include Core/Orinentation/Src/subdir.mk
 -include Core/LedController/Src/subdir.mk
 -include Core/LC709203F/Src/subdir.mk
@@ -22,6 +23,7 @@ RM := rm -rf
 -include Core/GY521/Src/subdir.mk
 -include Core/EE/subdir.mk
 -include Core/Dodeca/subdir.mk
+-include Core/DataStore/subdir.mk
 -include Core/Colours/subdir.mk
 -include Core/Cli/Src/subdir.mk
 -include Core/CBuffer/Src/subdir.mk

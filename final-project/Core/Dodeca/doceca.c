@@ -66,7 +66,7 @@ eDodecaErr_t dodecaStart(uint8_t id)
 	dodecaItem_t * dodeca ;
 	dodeca = dodecaGet(id);
 	dodeca->state = DODECA_STATE_ACTIVE;
-	ledSetFaceColour(id, dodeca->colour,LED_FACE_MODE_NORMAL );
+	ledSetFaceColour(id, dodeca->colour,0x0,LED_FACE_MODE_NORMAL );
 	ledRender();
 	return DODECA_ERR_OK;
 }
@@ -76,7 +76,8 @@ eDodecaErr_t dodecaStop(uint8_t id)
 	dodecaItem_t * dodeca ;
 	dodeca = dodecaGet(id);
 	dodeca->state = DODECA_STATE_STOPPED;
-	ledSetFaceColour(id, colourFindByid(COLOUR_BLACK_ID)->code,LED_FACE_MODE_NORMAL );
+	ledSetFaceColour(id, colourFindByid(COLOUR_BLACK_ID)->code,0x0,LED_FACE_MODE_NORMAL );
+	ledRender();
 	return DODECA_ERR_OK;
 }
 

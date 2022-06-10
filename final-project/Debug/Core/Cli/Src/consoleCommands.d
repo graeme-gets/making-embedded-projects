@@ -50,7 +50,8 @@ Core/Cli/Src/consoleCommands.o: ../Core/Cli/Src/consoleCommands.c \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Dodeca/Inc/dodeca.h \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/WS2812/Inc/ws2812.h \
  ../Core/Inc/tim.h ../Core/Inc/spi.h \
- D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/StateContoller/Inc/StateController.h
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/StateContoller/Inc/StateController.h \
+ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/RtcController/Inc/rtcController.h
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleCommands.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/CBuffer/Inc/cBuffer.h:
@@ -106,3 +107,4 @@ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making
 ../Core/Inc/tim.h:
 ../Core/Inc/spi.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/StateContoller/Inc/StateController.h:
+D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/RtcController/Inc/rtcController.h:

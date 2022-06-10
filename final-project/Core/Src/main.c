@@ -39,7 +39,7 @@
 #include "orientation.h"
 #include "systemConfig.h"
 #include "StateController.h"
-
+#include "rtcController.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -166,18 +166,38 @@ int main(void)
   }
   // run the Accel To get initial angle ready. Seems to need to be run a numerb of times for the karman angle to settle???
 
-detectFaceUp();
-
+  detectFaceUp(); // Just to start the cals off
+  dataStoreInit();
   ConsoleSendString("MPU6050 Initialised\n");
 
   //HAL_TIM_Base_Start_IT(&htim9);
-
-  stateContollerInit(STATE_BEGIN);
-  ledAllOff();
-
-
   ConsolePrintPrompt();
-/////////////////////////////  uint8_t lastFace = 255;
+
+  time_t tm1;
+  time_t tm2;
+
+  tm1 = rtcGetTimeStamp();
+  HAL_Delay(1000);
+  tm2 = rtcGetTimeStamp();
+
+
+  struct tm *tm;
+  tm = gmtime(&tm1);
+
+
+
+  RTC_DateTypeDef date;
+    HAL_RTC_GetDate(&hrtc, &date,RTC_FORMAT_BIN);
+    if (date.Year < 22)
+    {
+    	ConsoleSendLine("**** DATE & TIME NOT SET ******\n\n");
+    	stateContollerInit(STATE_CONFIG);
+    }
+    else
+  	  stateContollerInit(STATE_BEGIN);
+
+    ledAllOff();
+
 
   /* USER CODE END 2 */
 
