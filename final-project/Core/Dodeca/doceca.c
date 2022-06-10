@@ -9,23 +9,25 @@
 #include <stdio.h>
 #include "colours.h"
 #include "ledController.h"
+#include "dataStore.h"
+#include "rtcController.h"
 dodecaItems_t * dodecaItems = 0x0;
 
 
 const dodecaItems_t defaultDoceca = {
 		{
-			{0,"TOP",COLOUR_BLUE_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{1,"Admin",COLOUR_GREEN_ID, 0,0,DODECA_STATE_STOPPED},
-			{2,"Coding",COLOUR_BRICK_ID, 0,0,DODECA_STATE_STOPPED},
-			{3,"Meeting",COLOUR_ORANGE_ID, 0,0,DODECA_STATE_STOPPED},
-			{4,"Client 1",COLOUR_PEACH_ID, 0,0,DODECA_STATE_STOPPED},
-			{5,"FaceBook",COLOUR_PURPLE_ID, 0,0,DODECA_STATE_STOPPED},
-			{6,"None",COLOUR_SKY_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{7,"None",COLOUR_TEAL_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{8,"None",COLOUR_YELLOW_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{9,"None",COLOUR_SKY_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{10,"None",COLOUR_WHITE_ID, 0,0,DODECA_STATE_NOT_CONFIGURED},
-			{11,"STOP",COLOUR_RED_ID, 0,0,DODECA_STATE_STOPPED},
+			{0,DODECA_DISABLED,"TOP",COLOUR_BLUE_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{1,DODECA_ENABLED,"Admin",COLOUR_GREEN_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{2,DODECA_ENABLED,"Coding",COLOUR_BRICK_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{3,DODECA_ENABLED,"Meeting",COLOUR_ORANGE_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{4,DODECA_ENABLED,"Client 1",COLOUR_PEACH_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{5,DODECA_ENABLED,"FaceBook",COLOUR_PURPLE_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{6,DODECA_DISABLED,"None",COLOUR_SKY_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{7,DODECA_DISABLED,"None",COLOUR_TEAL_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{8,DODECA_DISABLED,"None",COLOUR_YELLOW_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{9,DODECA_DISABLED,"None",COLOUR_SKY_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{10,DODECA_DISABLED,"None",COLOUR_WHITE_ID, 0,0,0,DODECA_STATE_STOPPED},
+			{11,DODECA_DISABLED,"STOP",COLOUR_RED_ID, 0,0,0,DODECA_STATE_STOPPED},
 
 		}
 };
@@ -46,6 +48,7 @@ eDodecaErr_t dodecaReset()
 		dodecaItems->items[i].maxTimeMins = defaultDoceca.items[i].maxTimeMins;
 		dodecaItems->items[i].minTimeMins = defaultDoceca.items[i].minTimeMins;
 		dodecaItems->items[i].state = defaultDoceca.items[i].state;
+		dodecaItems->items[i].enabled = defaultDoceca.items[i].enabled;
 		strcpy(dodecaItems->items[i].name,defaultDoceca.items[i].name);
 	}
 	return DODECA_ERR_OK;
@@ -66,6 +69,7 @@ eDodecaErr_t dodecaStart(uint8_t id)
 	dodecaItem_t * dodeca ;
 	dodeca = dodecaGet(id);
 	dodeca->state = DODECA_STATE_ACTIVE;
+	dodeca->startTime = rtcGetTimeStamp();
 	ledSetFaceColour(id, dodeca->colour,0x0,LED_FACE_MODE_NORMAL );
 	ledRender();
 	return DODECA_ERR_OK;
@@ -78,6 +82,16 @@ eDodecaErr_t dodecaStop(uint8_t id)
 	dodeca->state = DODECA_STATE_STOPPED;
 	ledSetFaceColour(id, colourFindByid(COLOUR_BLACK_ID)->code,0x0,LED_FACE_MODE_NORMAL );
 	ledRender();
+
+	// Create a Dodeca record st store
+	recordDodeca_t record;
+	record.dodecaId = id;
+	record.startTime = dodeca->startTime;
+	record.endTime = rtcGetTimeStamp();
+	if (DATA_STORAGE_ERR_OK != dataStoreAdd(record))
+	{
+		return DODECA_ERR_ERROR;
+	}
 	return DODECA_ERR_OK;
 }
 
@@ -101,7 +115,6 @@ eDodecaErr_t dodecaGetStateName(eDodecaState_t state,char* name)
 
 	switch (state)
 	{
-		case DODECA_STATE_NOT_CONFIGURED : strcpy(name,"Not Configured"); break;
 		case DODECA_STATE_STOPPED : strcpy(name,"Stopped"); break;
 		case DODECA_STATE_ACTIVE : strcpy(name,"Active"); break;
 		default: strcpy(name,"undefined"); break;

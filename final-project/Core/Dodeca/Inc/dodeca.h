@@ -15,13 +15,15 @@
 #define DODECA_NAME_MAX  20
 #define DODECA_NAME_MIN  3
 #define DODECA_STOP_FACE 11
+#define DODECA_ENABLED 1
+#define DODECA_DISABLED 0
+
 
 typedef enum
 {
-	DODECA_STATE_ERROR = 0,
-	DODECA_STATE_NOT_CONFIGURED = 1,
-	DODECA_STATE_ACTIVE = 2,
-	DODECA_STATE_STOPPED = 3,
+//	DODECA_STATE_ERROR = 0,
+	DODECA_STATE_ACTIVE = 1,
+	DODECA_STATE_STOPPED = 2,
 	DODECA_STATE_32Bit = 0xFFFFFF
 }eDodecaState_t;
 
@@ -29,18 +31,20 @@ typedef enum
 typedef enum
 {
 	DODECA_ERR_OK = 0u,
-	DODECA_ERR_INVALID_ID = 1u,
-	DODECA_ERR_NOT_FOUND = 2u
+	DODECA_ERR_ERROR = 1u,
+	DODECA_ERR_INVALID_ID = 2u,
+	DODECA_ERR_NOT_FOUND = 3u
 }eDodecaErr_t;
 
 typedef struct
 {
 	uint8_t id;
+	uint8_t enabled;
 	char name[DODECA_NAME_MAX];
 	uint32_t colour;
 	uint8_t minTimeMins;
 	uint8_t maxTimeMins;
-	time_t start_time;
+	time_t startTime;
 	eDodecaState_t state;
 } dodecaItem_t;
 

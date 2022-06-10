@@ -133,22 +133,22 @@ void stateController()
 				// TODO Set Error reason
 				currentState = findState(currentState->error);
 				errorFlags |= STATE_CONTROLLER_ERROR_FACE_DETECT_FAIL;
-				breakState(STATE_BEGIN);;
+				breakState(STATE_BEGIN);
 			}
 			currentDodeca = dodecaGet(currentFaceUp);
-			if (DODECA_STATE_NOT_CONFIGURED == currentDodeca->state)
+			if (DODECA_DISABLED == currentDodeca->enabled)
 			{
-				// TODO Set Error reason
-				currentState = findState(currentState->error);
-			}
-			else 				{
-				currentDodeca = dodecaGet(currentFaceUp);
-				currentDodeca->state = DODECA_STATE_STOPPED;
-				currentState = findState(currentState->done);
-				ledSetFaceColour(currentDodeca->id, colourFindByid(COLOUR_RED_ID)->code,colourFindByid(COLOUR_WHITE_ID)->code,LED_FACE_MODE_HALF);
+				ledSetFaceColour(currentDodeca->id, currentDodeca->colour,colourFindByid(COLOUR_RED_ID)->code,LED_FACE_MODE_HALF);
 				ledRender();
 			}
+			else
+			{
+				currentDodeca->state = DODECA_STATE_STOPPED;
+				ledSetFaceColour(currentDodeca->id, currentDodeca->colour,colourFindByid(COLOUR_WHITE_ID)->code,LED_FACE_MODE_HALF);
 
+				ledRender();
+			}
+			currentState = findState(currentState->done);
 			breakState(STATE_BEGIN);;
 
 	case STATE_CONFIG:
@@ -208,26 +208,23 @@ void stateController()
 		{
 			dodecaStop(currentDodeca->id);
 		}
-		else if (currentDodeca->state == DODECA_STATE_NOT_CONFIGURED)
-		{
-			ledSetFaceColour(currentDodeca->id, colourFindByid(COLOUR_BLACK_ID)->code, 0x0,LED_FACE_MODE_NORMAL);
-			ledRender();
-		}
 		else if (currentDodeca->state == DODECA_STATE_STOPPED)
 		{
 			ledSetFaceColour(currentDodeca->id, colourFindByid(COLOUR_BLACK_ID)->code,0x0, LED_FACE_MODE_NORMAL);
 			ledRender();
 		}
-		else if (currentDodeca->state == DODECA_STATE_ERROR)
-		{
-			ledSetFaceColour(currentDodeca->id, colourFindByid(COLOUR_BLACK_ID)->code,0x0, LED_FACE_MODE_NORMAL);
-			ledRender();
-		}
+
 		// Change the current Dodeca for the new Dodeca
 		currentDodeca = newDodecaDetected;
-		// Now deal with the new DoDeca
 
-		if (currentDodeca->id == DODECA_STOP_FACE)
+		// Now deal with the new DoDeca
+		if (DODECA_DISABLED == currentDodeca->enabled)
+		{
+			currentDodeca->state = DODECA_STATE_STOPPED;
+			ledSetFaceColour(currentDodeca->id, currentDodeca->colour, colourFindByid(COLOUR_ERROR_ID)->code, LED_FACE_MODE_HALF);
+			ledRender();
+		}
+		else if (currentDodeca->id == DODECA_STOP_FACE)
 		{
 			ledSetFaceColour(currentDodeca->id, currentDodeca->colour, colourFindByid(COLOUR_BLACK_ID)->code, LED_FACE_MODE_HALF);
 			ledRender();
@@ -237,16 +234,7 @@ void stateController()
 			dodecaStart(currentDodeca->id);
 
 		}
-		else if (currentDodeca->state == DODECA_STATE_NOT_CONFIGURED)
-		{
-			ledSetFaceColour(currentDodeca->id, currentDodeca->colour,0x0, LED_FACE_MODE_ERROR);
-			ledRender();
-		}
-		else if (currentDodeca->state == DODECA_STATE_ERROR)
-		{
-			ledSetFaceColour(currentDodeca->id, currentDodeca->colour,0x0, LED_FACE_MODE_ERROR);
-			ledRender();
-		}
+
 
 		breakState(STATE_CHANGE_TASK);
 	case STATE_ERROR:

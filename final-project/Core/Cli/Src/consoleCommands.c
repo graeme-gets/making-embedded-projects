@@ -27,7 +27,7 @@
 #include "spi.h"
 #include "StateController.h"
 #include "rtcController.h"
-#include "dataSt"
+#include "dataStore.h"
 
 
 
@@ -106,7 +106,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 
 static void displayDodeca(uint8_t id)
 {
-	char msg[120];
+	char msg[50];
 	char statename[20];
 	colour_t *colour;
 	dodecaItem_t *dodeca;
@@ -116,19 +116,59 @@ static void displayDodeca(uint8_t id)
 
 	dodecaGetStateName(dodeca->state,statename);
 	colour = colourFindByCode(dodeca->colour);
-	sprintf(msg,"Dodeca: %i - %s\n\tState: %s\n\tColour: %s\n\tMin Time: %d\n\tMax Time: %d\n",id,dodeca->name,statename, colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
+	sprintf(msg, "Dodeca: %i - %s",id,dodeca->name);
+	ConsoleSendLine(msg);
+	sprintf(msg,"\tEnabled: %s\n\tState: %s",dodeca->enabled==0?"Yes":"No",statename);
+	ConsoleSendLine(msg);
+	sprintf(msg,"Colour: %s\n\tMin Time: %d\n\tMax Time: %d\n", colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
 	ConsoleSendLine(msg);
 }
 
 
 static eCommandResult_T ConsoleCommandDumpData(const char buffer[])
 {
-	uint8_t recordCount =
+	char msg[100];
+	uint8_t recordCount;
+	uint8_t recordFound = 0;
+	recordDodeca_t *record;
+
+	dataStoreGetCurrentPosition(&recordCount);
+	ConsoleSendLine("\n*** Data Storage Dump ***\n");
+	sprintf(msg,"Task,Start Date, Start Time, End Date, End Time, Total Mins");
+	ConsoleSendLine(msg);
+	for (uint8_t i=0;i<DATASTORE_MAX_RECORDS;i++)
+	{
+		record = dataStoreGet(i);
+
+
+		if (RECORD_STORE_USED ==  record->status)
+		{
+			recordFound = 1;
+			dodecaItem_t *dodeca;
+			dodeca = dodecaGet(record->dodecaId);
+			struct tm *startTime;
+			struct tm *endTime;
+			startTime = gmtime(&record->startTime);
+			endTime = gmtime(&record->endTime);
+			uint16_t diff = difftime(record->endTime, record->startTime);
+			sprintf(msg,"%s,%i-%i-%i, %i:%i:%i,%i-%i-%i, %i:%i:%i,%i ",dodeca->name,startTime->tm_mday,startTime->tm_mon+1,startTime->tm_year+1900,startTime->tm_hour,startTime->tm_min,startTime->tm_sec,endTime->tm_mday,endTime->tm_mon + 1,endTime->tm_year+1900,endTime->tm_hour,endTime->tm_min,endTime->tm_sec,diff);
+			ConsoleSendLine(msg);
+		}
+
+	}
+
+	if (!recordFound)
+		ConsoleSendLine("No records have been logged");
+
+	return COMMAND_SUCCESS;
 }
 
 static eCommandResult_T ConsoleCommandClearData(const char buffer[])
 {
+	dataStoreInit();
 
+
+	return COMMAND_SUCCESS;
 }
 
 
@@ -192,11 +232,11 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 
 		switch (buffer[cmdIndex])
 		{
-		case 'a':
-				dodeca->state = DODECA_STATE_STOPPED;
+		case 'e':
+				dodeca->enabled =DODECA_ENABLED;
 			break;
 		case 'd':
-				dodeca->state = DODECA_STATE_NOT_CONFIGURED;
+				dodeca->enabled = DODECA_DISABLED;
 			break;
 		case 'n':
 					// Get the task Name
