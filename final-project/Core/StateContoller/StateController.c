@@ -19,10 +19,10 @@
 stateControl_t stateTable[] = {
 //											New Face Detect		Lipo Int	, 		RTC Int				Sleep Timeout, 		Done				Error
 		{STATE_CONFIG, 		"Config",		STATE_NULL	,		STATE_NULL	, 		STATE_NULL, 		STATE_NULL,			STATE_NULL,			STATE_ERROR},
-		{STATE_IDLE, 		"Idle",			STATE_NULL,			STATE_BATTERY_TEST,	STATE_NULL, 		STATE_CHECK_OREN,	STATE_SLEEP,		STATE_ERROR},
+		{STATE_IDLE, 		"Idle",			STATE_NULL,			STATE_BATTERY_TEST,	STATE_NULL, 		STATE_CHECK_OREN,	STATE_CHECK_OREN,	STATE_ERROR},
 		{STATE_CHECK_OREN, 	"Orientation",	STATE_CHANGE_TASK,	STATE_NULL,			STATE_NULL,  		STATE_NULL,			STATE_SLEEP,		STATE_ERROR},
 		{STATE_CHANGE_TASK, "Change Task",	STATE_NULL,			STATE_NULL,			STATE_NULL,  		STATE_NULL,			STATE_SLEEP,		STATE_ERROR},
-		{STATE_SLEEP, 		"Sleep",		STATE_NULL	,		STATE_NULL	, 		STATE_NULL, 		STATE_IDLE,			STATE_CHECK_OREN,	STATE_ERROR},
+		{STATE_SLEEP, 		"Sleep",		STATE_NULL	,		STATE_NULL	, 		STATE_NULL, 		STATE_IDLE,			STATE_IDLE,			STATE_ERROR},
 		{STATE_BATTERY_TEST,"Battery Test",	STATE_NULL	,		STATE_NULL	, 		STATE_NULL, 		STATE_NULL,			STATE_NULL,			STATE_ERROR},
 		{STATE_ERROR,		"**ERROR**",	STATE_NULL	,		STATE_NULL	, 		STATE_NULL, 		STATE_NULL,			STATE_IDLE,			STATE_ERROR},
 		{STATE_BEGIN,		"BEGIN",		STATE_IDLE	,		STATE_IDLE	, 		STATE_IDLE, 		STATE_IDLE,			STATE_IDLE,			STATE_ERROR},
@@ -95,7 +95,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim9)
 	{
-
+		HAL_PWR_DisableSleepOnExit ();
 	}
 }
 
@@ -183,8 +183,8 @@ void stateController()
 			}
 
 			newDodecaDetected = dodecaGet(detectedFace);
-			sprintf(msg,"Current: [%i] %s, New [%i] %s",currentDodeca->id,currentDodeca->name,newDodecaDetected->id,newDodecaDetected->name);
-			ConsoleSendLine(msg);
+			//sprintf(msg,"Current: [%i] %s, New [%i] %s",currentDodeca->id,currentDodeca->name,newDodecaDetected->id,newDodecaDetected->name);
+			//ConsoleSendLine(msg);
 
 
 			if (newDodecaDetected->id == currentDodeca->id) // If its the same face then exit
@@ -263,10 +263,11 @@ void stateController()
 			displayState();
 			currentState = findState(currentState->done);
 			// TODO : Goto Sleep
-			if (STATE_CONT_MODE_CONFIG ==  stateControllerMode)
-			{
-				currentState = findState(STATE_CONFIG);
-			}
+			HAL_SuspendTick();
+			HAL_TIM_Base_Start_IT(&htim9);
+			HAL_PWR_EnableSleepOnExit();
+			HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+			 HAL_ResumeTick();
 			breakState(STATE_SLEEP);
 	case STATE_NULL:
 
