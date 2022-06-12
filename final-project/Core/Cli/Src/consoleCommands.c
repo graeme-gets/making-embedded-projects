@@ -82,10 +82,10 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"time", &ConsoleCommandTimeSet, HELP("Set the current time (HH:MM:SS)")},
 	{"date?", &ConsoleCommandDateQuery, HELP("Get the current date")},
 	{"date", &ConsoleCommandDateSet, HELP("Set the current date (DD-MM-YY)")},
-	{"acc?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data [r n - Read n times]\ng - Get Reg\nWrite Reg")},
+	{"acc?", &ConsoleCommandAccelQuery, HELP("Get Accelerometer Data [r n - Read n times] g - Get Reg w- Write Reg")},
 	{"lipo?", &ConsoleCommandLipoQuery, HELP("Get Info on Lipo Battery ")},
-	{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
-	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
+	//{"cpu?", &ConsoleCommandCPUQuery, HELP("Get Info on The CPU")},
+//	{"mem?", &ConsoleCommandMemTest, HELP("Test the SPI memory")},
 	{"led", &ConsoleCommandLEDSet, HELP("Set a face to a colour")},
 	{"faceup?", &ConsoleCommandFaceUpQuery, HELP("Detect Face Up")},
 	{"save", &ConsoleCommandSaveConfig, HELP("Saves the current config to Flash")},
@@ -118,7 +118,7 @@ static void displayDodeca(uint8_t id)
 	colour = colourFindByCode(dodeca->colour);
 	sprintf(msg, "Dodeca: %i - %s",id,dodeca->name);
 	ConsoleSendLine(msg);
-	sprintf(msg,"\tEnabled: %s\n\tState: %s",dodeca->enabled==0?"Yes":"No",statename);
+	sprintf(msg,"\tEnabled: %s\n\tState: %s",dodeca->enabled==1?"Yes":"No",statename);
 	ConsoleSendLine(msg);
 	sprintf(msg,"Colour: %s\n\tMin Time: %d\n\tMax Time: %d\n", colour->name ,dodeca->minTimeMins,dodeca->maxTimeMins);
 	ConsoleSendLine(msg);
@@ -242,7 +242,7 @@ static eCommandResult_T ConsoleCommandDodecaSet(const char buffer[])
 					// Get the task Name
 					ConsoleReceiveParamString(buffer, 3, name,DODECA_NAME_MAX );
 					// Check Length
-					if (strlen(name)< DODECA_NAME_MAX)
+					if (strlen(name)< DODECA_NAME_MIN)
 					{
 						ConsoleSendLine("Name too short");
 						return COMMAND_PARAMETER_ERROR;
@@ -411,6 +411,7 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 			break;
 		case'd':
 				ledDance();
+				ConsoleSendLine("Finished");
 			break;
 		default :
 			return CONSOLE_ERROR;

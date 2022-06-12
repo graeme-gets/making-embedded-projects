@@ -68,7 +68,7 @@ void ledSetFaceColour(uint8_t face, uint32_t colour, uint32_t colour2,eLedFaceMo
 void ledDance()
 {
 	int i=0;
-	while (i<10){
+	while (i<1){
 	 uint8_t angle = 0;
 	 const uint8_t angle_difference = 11;
 	  for(uint8_t i = 0; i < NUM_PIXELS /* Change that to your amount of LEDs */; i++) {
@@ -77,8 +77,8 @@ void ledDance()
 			uint32_t rgb_color = hsl_to_rgb(angle + (i * angle_difference), 255, 127);
 			// Set color
 			led_set_RGB(i, (rgb_color >> 16) & 0xFF, (rgb_color >> 8) & 0xFF, rgb_color & 0xFF);
-			if (i>1)
-				led_set_RGB(i-1, 0,0,0);
+			if (i>6)
+				led_set_RGB(i-6, 0,0,0);
 			++angle;
 			led_render();
 

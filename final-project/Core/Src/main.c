@@ -173,17 +173,6 @@ int main(void)
   //HAL_TIM_Base_Start_IT(&htim9);
   ConsolePrintPrompt();
 
-  time_t tm1;
-  time_t tm2;
-
-  tm1 = rtcGetTimeStamp();
-  HAL_Delay(1000);
-  tm2 = rtcGetTimeStamp();
-
-
-  struct tm *tm;
-  tm = gmtime(&tm1);
-
 
 
   RTC_DateTypeDef date;
