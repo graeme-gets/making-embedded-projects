@@ -183,8 +183,6 @@ void stateController()
 			}
 
 			newDodecaDetected = dodecaGet(detectedFace);
-			//sprintf(msg,"Current: [%i] %s, New [%i] %s",currentDodeca->id,currentDodeca->name,newDodecaDetected->id,newDodecaDetected->name);
-			//ConsoleSendLine(msg);
 
 
 			if (newDodecaDetected->id == currentDodeca->id) // If its the same face then exit

@@ -52,6 +52,7 @@ Core/Cli/Src/consoleCommands.o: ../Core/Cli/Src/consoleCommands.c \
  ../Core/Inc/tim.h ../Core/Inc/spi.h \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/StateContoller/Inc/StateController.h \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/RtcController/Inc/rtcController.h \
+ ../Core/Inc/rtc.h \
  D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/DataStore/Inc/dataStore.h
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/consoleCommands.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/Cli/Inc/console.h:
@@ -109,4 +110,5 @@ D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making
 ../Core/Inc/spi.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/StateContoller/Inc/StateController.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/RtcController/Inc/rtcController.h:
+../Core/Inc/rtc.h:
 D:/atp/OneDrive\ -\ A\ Thousand\ Projects/Study/Making\ Embedded\ Systems/making-embedded-projects/final-project/Core/DataStore/Inc/dataStore.h:

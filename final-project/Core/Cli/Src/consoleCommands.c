@@ -36,10 +36,7 @@
 //TODO: Make module for RTC control
 extern RTC_HandleTypeDef hrtc;
 
-uint8_t uninitGlobalVar;
-uint8_t initGlobalVar = 'A';
-const uint8_t constVar;
-static uint8_t staticVar;
+
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -53,8 +50,8 @@ static eCommandResult_T ConsoleCommandDateSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandTimeSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandAccelQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandLipoQuery(const char buffer[]);
-static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
-static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
+//static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[]);
+//static eCommandResult_T ConsoleCommandMemTest(const char buffer[]);
 static eCommandResult_T ConsoleCommandLEDSet(const char buffer[]);
 static eCommandResult_T ConsoleCommandFaceUpQuery(const char buffer[]);
 static eCommandResult_T ConsoleCommandSaveConfig(const char buffer[]);
@@ -423,8 +420,8 @@ static eCommandResult_T ConsoleCommandLEDSet(const char buffer[])
 
 }
 
-static eCommandResult_T ConsoleCommandMemTest(const char buffer[])
-{
+//static eCommandResult_T ConsoleCommandMemTest(const char buffer[])
+//{
 //	char msg[50];
 //	uint32_t Temp;
 //	uint8_t temp0 = 0, temp1 = 0, temp2 = 0;
@@ -444,48 +441,48 @@ static eCommandResult_T ConsoleCommandMemTest(const char buffer[])
 //	Temp = (temp0 << 16) | (temp1 << 8) | temp2;
 //	sprintf(msg,"Flash Mem Id \t%#02x %#02x %#02x %#02x %#02x %#02x %#02x %#02x ",id[0],id[1],id[2],id[3],id[4],id[5],id[6],id[7]);
 //	ConsoleSendLine(msg);
-	ConsoleSendLine("Commented out");
-	return CONSOLE_SUCCESS;
-}
+//	ConsoleSendLine("Commented out");
+//	return CONSOLE_SUCCESS;
+//}
 
-static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[])
-{
-	uint8_t funcVar;
-
-	char msg[30];
-	register int SP __asm("r13");
-
-
-	sprintf(msg,"-- CPU Details --");
-	ConsoleSendLine(msg);
-
-	sprintf(msg,"Stack Pointer \t\t%#08x",SP);
-	ConsoleSendLine(msg);
-
-	unsigned int* HP = malloc(1);
-	*HP=0xAB;
-
-	sprintf(msg,"Heap Pointer \t\t%#08x",(unsigned int)HP-1);
-	ConsoleSendLine(msg);
-	free(HP);
+//static eCommandResult_T ConsoleCommandCPUQuery(const char buffer[])
+//{
+//	uint8_t funcVar;
+//
+//	char msg[30];
+//	register int SP __asm("r13");
+//
+//
+//	sprintf(msg,"-- CPU Details --");
+//	ConsoleSendLine(msg);
+//
+//	sprintf(msg,"Stack Pointer \t\t%#08x",SP);
+//	ConsoleSendLine(msg);
+//
+//	unsigned int* HP = malloc(1);
+//	*HP=0xAB;
+//
+//	sprintf(msg,"Heap Pointer \t\t%#08x",(unsigned int)HP-1);
+//	ConsoleSendLine(msg);
+//	free(HP);
 
 //	sprintf(msg,"Initialised global variable \t\t%#08x",(unsigned int)(&initGlobalVar));
 //	ConsoleSendLine(msg);
 
 //	sprintf(msg,"Un-initialised global variable \t\t%#08x",(unsigned int)&uninitGlobalVar);
 //	ConsoleSendLine(msg);
-
-	sprintf(msg,"Const variable \t\t%#08x",(unsigned int)&constVar);
-		ConsoleSendLine(msg);
-
-	sprintf(msg,"Static variable \t\t%#08x",(unsigned int)&staticVar);
-	ConsoleSendLine(msg);
-
-	sprintf(msg,"Function variable \t\t%#08x",(unsigned int)&funcVar);
-	ConsoleSendLine(msg);
-
-	return CONSOLE_SUCCESS;
-}
+//
+//	sprintf(msg,"Const variable \t\t%#08x",(unsigned int)&constVar);
+//		ConsoleSendLine(msg);
+//
+//	sprintf(msg,"Static variable \t\t%#08x",(unsigned int)&staticVar);
+//	ConsoleSendLine(msg);
+//
+//	sprintf(msg,"Function variable \t\t%#08x",(unsigned int)&funcVar);
+//	ConsoleSendLine(msg);
+//
+//	return CONSOLE_SUCCESS;
+//}
 
 /***********************************************************
  * Set RTC Date

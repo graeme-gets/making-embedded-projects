@@ -40,6 +40,7 @@
 #include "systemConfig.h"
 #include "StateController.h"
 #include "rtcController.h"
+#include "dataStore.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

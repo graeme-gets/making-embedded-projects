@@ -11,6 +11,25 @@
 #include "time.h"
 
 
+eRTCError_t rtcSetTime(RTC_TimeTypeDef *time)
+{
+	if (HAL_RTC_SetTime(&hrtc, time, RTC_FORMAT_BIN) != HAL_OK) // Must Set using BIN else Year is incorrect!
+		{
+			return RTC_INVALID_TIME;
+		}
+	return RTC_OK;
+}
+
+
+eRTCError_t rtcSetDate(RTC_DateTypeDef *date)
+{
+	if (HAL_RTC_SetDate(&hrtc, date, RTC_FORMAT_BIN) != HAL_OK) // Must Set using BIN else Year is incorrect!
+		{
+			return RTC_INVALID_DATE;
+		}
+	return RTC_OK;
+}
+
 
 
 void rtcGetTimeString(char* timeString)
